@@ -7,7 +7,7 @@
     <style>
         body {
             font-family: 'Arial', sans-serif;
-            background: #f4f4f9;
+            background: linear-gradient(135deg, #6a11cb, #2575fc);
             display: flex;
             justify-content: center;
             align-items: center;
@@ -18,24 +18,26 @@
 
         .calculator {
             background-color: #2c2c2c;
-            padding: 20px;
-            border-radius: 15px;
-            box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.2);
-            width: 260px;
+            padding: 25px;
+            border-radius: 20px;
+            box-shadow: 0px 10px 40px rgba(0, 0, 0, 0.3);
+            width: 280px;
             text-align: center;
+            transition: background-color 0.3s ease;
         }
 
         .display {
             width: 100%;
-            height: 60px;
+            height: 70px;
             background-color: #333;
             color: #fff;
-            font-size: 2em;
+            font-size: 2.5em;
             text-align: right;
             padding: 15px;
             border-radius: 10px;
             border: none;
             margin-bottom: 15px;
+            transition: background-color 0.3s ease;
         }
 
         .buttons {
@@ -45,13 +47,13 @@
         }
 
         .btn {
-            padding: 20px;
-            font-size: 1.5em;
+            padding: 25px;
+            font-size: 1.6em;
             background-color: #444;
             color: #fff;
-            border-radius: 10px;
+            border-radius: 12px;
             border: none;
-            transition: background-color 0.3s ease, transform 0.1s ease;
+            transition: background-color 0.3s ease, transform 0.2s ease;
         }
 
         .btn:hover {
@@ -71,9 +73,10 @@
             text-align: center;
             margin-top: 20px;
             color: #888;
-            font-size: 0.9em;
+            font-size: 1em;
         }
 
+        /* Dark Mode */
         .dark-mode {
             background-color: #111;
             color: #fff;
@@ -82,6 +85,23 @@
         .light-mode {
             background-color: #fff;
             color: #000;
+        }
+
+        .history {
+            color: #ccc;
+            font-size: 1em;
+            margin-top: 10px;
+            display: none;
+        }
+
+        .mode-toggle {
+            padding: 10px;
+            font-size: 1.2em;
+            background-color: #f28d35;
+            border-radius: 5px;
+            border: none;
+            margin-top: 15px;
+            cursor: pointer;
         }
     </style>
 </head>
@@ -109,6 +129,13 @@
             <button class="btn" onclick="calculateResult()">=</button>
             <button class="btn operator" onclick="appendOperator('/')">/</button>
         </div>
+
+        <div class="history" id="history">
+            <h4>History:</h4>
+            <ul id="history-list"></ul>
+        </div>
+
+        <button class="mode-toggle" onclick="toggleMode()">Switch to Dark Mode</button>
     </div>
     <div class="footer">
         <p>Credit: Anawin Kulmor</p>
@@ -118,6 +145,8 @@
         let currentInput = '';
         let operator = '';
         let previousInput = '';
+        let history = [];
+        let isDarkMode = false;
 
         function appendNumber(number) {
             currentInput += number;
@@ -160,10 +189,15 @@
                 default:
                     return;
             }
+
             currentInput = result.toString();
             operator = '';
             previousInput = '';
             document.getElementById('display').value = currentInput;
+
+            // Save result to history
+            history.push(`${previousInput} ${operator} ${current} = ${result}`);
+            updateHistory();
         }
 
         function clearDisplay() {
@@ -171,6 +205,38 @@
             operator = '';
             previousInput = '';
             document.getElementById('display').value = '';
+        }
+
+        function updateHistory() {
+            let historyList = document.getElementById('history-list');
+            historyList.innerHTML = '';
+            history.forEach(item => {
+                let li = document.createElement('li');
+                li.textContent = item;
+                historyList.appendChild(li);
+            });
+            document.getElementById('history').style.display = 'block';
+        }
+
+        function toggleMode() {
+            isDarkMode = !isDarkMode;
+            const body = document.body;
+            const calculator = document.querySelector('.calculator');
+            const modeButton = document.querySelector('.mode-toggle');
+
+            if (isDarkMode) {
+                body.classList.add('dark-mode');
+                body.classList.remove('light-mode');
+                calculator.classList.add('dark-mode');
+                calculator.classList.remove('light-mode');
+                modeButton.textContent = 'Switch to Light Mode';
+            } else {
+                body.classList.add('light-mode');
+                body.classList.remove('dark-mode');
+                calculator.classList.add('light-mode');
+                calculator.classList.remove('dark-mode');
+                modeButton.textContent = 'Switch to Dark Mode';
+            }
         }
     </script>
 </body>
