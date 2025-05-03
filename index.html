@@ -3,148 +3,1366 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>เครื่องคิดเลข</title>
+    <title>Weather Forecast</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
+        :root {
+            --primary: #3498db;
+            --secondary: #2980b9;
+            --success: #2ecc71;
+            --danger: #e74c3c;
+            --warning: #f39c12;
+            --info: #1abc9c;
+            --light: #ecf0f1;
+            --dark: #2c3e50;
+        }
+        
         * {
+            box-sizing: border-box;
             margin: 0;
             padding: 0;
-            box-sizing: border-box;
-            font-family: 'Arial', sans-serif;
         }
-
+        
         body {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            background-color: #f0f0f0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f5f7fa;
         }
-
-        .calculator {
-            background-color: #fff;
-            border-radius: 15px;
-            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
-            padding: 20px;
-            width: 300px;
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 15px;
         }
-
-        .display input {
-            width: 100%;
-            height: 50px;
-            font-size: 2rem;
-            text-align: right;
-            border: none;
-            border-radius: 10px;
+        
+        header {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 15px 0;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
             margin-bottom: 20px;
-            padding: 10px;
-            background-color: #f7f7f7;
+            position: sticky;
+            top: 0;
+            z-index: 100;
         }
-
-        .buttons {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 10px;
+        
+        h1 {
+            margin: 0;
+            font-size: 1.8rem;
         }
-
-        button {
-            font-size: 1.5rem;
-            padding: 20px;
-            border: none;
-            border-radius: 10px;
-            background-color: #f7f7f7;
+        
+        .menu {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+        
+        .menu-btn {
+            background-color: white;
+            border: 2px solid var(--primary);
+            color: var(--primary);
+            padding: 8px 15px;
+            border-radius: 50px;
             cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            font-size: 0.9rem;
+            white-space: nowrap;
+        }
+        
+        .menu-btn:hover, .menu-btn.active {
+            background-color: var(--primary);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        
+        .content {
+            background-color: white;
+            border-radius: 10px;
+            padding: 15px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+            display: none;
+        }
+        
+        .content.active {
+            display: block;
+        }
+        
+        .location-selector {
+            margin-bottom: 15px;
+        }
+        
+        select, input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+            font-size: 1rem;
+            margin-bottom: 10px;
+        }
+        
+        button {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
             transition: background-color 0.3s;
         }
-
+        
         button:hover {
-            background-color: #e0e0e0;
+            background-color: var(--secondary);
         }
-
-        button.operator {
-            background-color: #ff9500;
-            color: white;
+        
+        .weather-card {
+            border: 1px solid #eee;
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 12px;
+            background-color: #f9f9f9;
         }
-
-        button.operator:hover {
-            background-color: #ff7f00;
+        
+        .weather-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 8px;
+        }
+        
+        .weather-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            gap: 8px;
+        }
+        
+        .detail-item {
+            background-color: white;
+            padding: 8px;
+            border-radius: 5px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+        
+        .hourly-forecast {
+            display: flex;
+            overflow-x: auto;
+            gap: 8px;
+            padding: 8px 0;
+            -webkit-overflow-scrolling: touch;
+        }
+        
+        .hour-item {
+            min-width: 100px;
+            padding: 8px;
+            background-color: white;
+            border-radius: 5px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            flex-shrink: 0;
+        }
+        
+        .aqi-indicator {
+            height: 20px;
+            border-radius: 10px;
+            margin-top: 5px;
+            background: linear-gradient(to right, #00e400, #ffff00, #ff7e00, #ff0000, #8f3f97, #7e0023);
+        }
+        
+        .advice-list {
+            list-style-type: none;
+            padding: 0;
+        }
+        
+        .advice-item {
+            background-color: #e3f2fd;
+            padding: 10px 15px;
+            margin-bottom: 8px;
+            border-radius: 5px;
+            border-left: 4px solid var(--primary);
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: var(--primary);
+        }
+        
+        .error {
+            color: var(--danger);
+            padding: 10px;
+            text-align: center;
+        }
+        
+        /* Responsive styles */
+        @media (max-width: 768px) {
+            .weather-details {
+                grid-template-columns: 1fr 1fr;
+            }
+            
+            .menu-btn {
+                padding: 6px 12px;
+                font-size: 0.8rem;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .weather-details {
+                grid-template-columns: 1fr;
+            }
+            
+            h1 {
+                font-size: 1.5rem;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="calculator">
-        <div class="display">
-            <input type="text" id="result" disabled>
+    <header>
+        <div class="container">
+            <h1><i class="fas fa-cloud-sun"></i> Weather Forecast</h1>
+            <p>ตรวจสอบสภาพอากาศและพยากรณ์อากาศล่าสุด</p>
         </div>
-        <div class="buttons">
-            <button class="btn" onclick="appendNumber(7)">7</button>
-            <button class="btn" onclick="appendNumber(8)">8</button>
-            <button class="btn" onclick="appendNumber(9)">9</button>
-            <button class="btn operator" onclick="setOperator('+')">+</button>
-            <button class="btn" onclick="appendNumber(4)">4</button>
-            <button class="btn" onclick="appendNumber(5)">5</button>
-            <button class="btn" onclick="appendNumber(6)">6</button>
-            <button class="btn operator" onclick="setOperator('-')">-</button>
-            <button class="btn" onclick="appendNumber(1)">1</button>
-            <button class="btn" onclick="appendNumber(2)">2</button>
-            <button class="btn" onclick="appendNumber(3)">3</button>
-            <button class="btn operator" onclick="setOperator('*')">*</button>
-            <button class="btn" onclick="appendNumber(0)">0</button>
-            <button class="btn" onclick="clearResult()">C</button>
-            <button class="btn" onclick="calculateResult()">=</button>
-            <button class="btn operator" onclick="setOperator('/')">/</button>
+    </header>
+    
+    <div class="container">
+        <div class="menu">
+            <button class="menu-btn active" data-target="7-day"><i class="fas fa-calendar-week"></i> 7 วัน</button>
+            <button class="menu-btn" data-target="hourly"><i class="fas fa-clock"></i> รายชั่วโมง</button>
+            <button class="menu-btn" data-target="air-quality"><i class="fas fa-wind"></i> คุณภาพอากาศ</button>
+            <button class="menu-btn" data-target="advice"><i class="fas fa-lightbulb"></i> คำแนะนำ</button>
+            <button class="menu-btn" data-target="sun-info"><i class="fas fa-sun"></i> ดวงอาทิตย์</button>
+            <button class="menu-btn" data-target="add-location"><i class="fas fa-plus"></i> เพิ่มสถานที่</button>
+            <button class="menu-btn" data-target="statistics"><i class="fas fa-chart-bar"></i> สถิติ</button>
+            <button class="menu-btn" id="check-api-btn"><i class="fas fa-plug"></i> ตรวจสอบ API</button>
+        </div>
+        
+        <!-- 7-day Forecast -->
+        <div id="7-day" class="content active">
+            <h2><i class="fas fa-calendar-week"></i> พยากรณ์อากาศ 7 วัน</h2>
+            <div class="location-selector">
+                <select id="location-7day">
+                    <option value="">เลือกสถานที่...</option>
+                </select>
+            </div>
+            <div id="7-day-forecast"></div>
+        </div>
+        
+        <!-- Hourly Forecast -->
+        <div id="hourly" class="content">
+            <h2><i class="fas fa-clock"></i> พยากรณ์อากาศรายชั่วโมง</h2>
+            <div class="location-selector">
+                <select id="location-hourly">
+                    <option value="">เลือกสถานที่...</option>
+                </select>
+            </div>
+            <div id="hourly-forecast" class="hourly-forecast"></div>
+        </div>
+        
+        <!-- Air Quality -->
+        <div id="air-quality" class="content">
+            <h2><i class="fas fa-wind"></i> คุณภาพอากาศ</h2>
+            <div class="location-selector">
+                <select id="location-aqi">
+                    <option value="">เลือกสถานที่...</option>
+                </select>
+            </div>
+            <div id="aqi-data"></div>
+        </div>
+        
+        <!-- Daily Advice -->
+        <div id="advice" class="content">
+            <h2><i class="fas fa-lightbulb"></i> คำแนะนำประจำวัน</h2>
+            <div class="location-selector">
+                <select id="location-advice">
+                    <option value="">เลือกสถานที่...</option>
+                </select>
+            </div>
+            <div id="daily-advice"></div>
+        </div>
+        
+        <!-- Sun Info -->
+        <div id="sun-info" class="content">
+            <h2><i class="fas fa-sun"></i> ข้อมูลดวงอาทิตย์ขึ้น-ตก</h2>
+            <div class="location-selector">
+                <select id="location-sun">
+                    <option value="">เลือกสถานที่...</option>
+                </select>
+            </div>
+            <div id="sun-data"></div>
+        </div>
+        
+        <!-- Add Location -->
+        <div id="add-location" class="content">
+            <h2><i class="fas fa-plus"></i> เพิ่มสถานที่</h2>
+            <div>
+                <h3><i class="fas fa-map-marker-alt"></i> เพิ่มด้วยพิกัด</h3>
+                <form id="add-by-coords">
+                    <div>
+                        <label>ชื่อสถานที่:</label>
+                        <input type="text" id="location-name" required>
+                    </div>
+                    <div>
+                        <label>ละติจูด:</label>
+                        <input type="text" id="location-lat" required placeholder="เช่น 13.7563">
+                    </div>
+                    <div>
+                        <label>ลองจิจูด:</label>
+                        <input type="text" id="location-lon" required placeholder="เช่น 100.5018">
+                    </div>
+                    <button type="submit"><i class="fas fa-save"></i> เพิ่มสถานที่</button>
+                </form>
+                
+                <h3><i class="fas fa-search"></i> เพิ่มด้วยชื่อสถานที่</h3>
+                <form id="add-by-name">
+                    <div>
+                        <label>ชื่อสถานที่:</label>
+                        <input type="text" id="search-name" required placeholder="เช่น Bangkok, Tokyo">
+                    </div>
+                    <button type="submit"><i class="fas fa-search"></i> ค้นหาและเพิ่ม</button>
+                </form>
+            </div>
+        </div>
+        
+        <!-- Statistics -->
+        <div id="statistics" class="content">
+            <h2><i class="fas fa-chart-bar"></i> สถิติสภาพอากาศ</h2>
+            <div class="location-selector">
+                <select id="location-stats">
+                    <option value="">เลือกสถานที่...</option>
+                </select>
+            </div>
+            <div id="weather-stats"></div>
+        </div>
+        
+        <!-- API Status -->
+        <div id="api-status" class="content">
+            <h2><i class="fas fa-plug"></i> สถานะ API</h2>
+            <div id="api-status-results"></div>
         </div>
     </div>
 
     <script>
-        let currentInput = '';
-        let previousInput = '';
-        let operator = '';
-
-        function appendNumber(number) {
-            currentInput += number;
-            document.getElementById('result').value = currentInput;
-        }
-
-        function setOperator(op) {
-            if (currentInput === '') return;
-            if (previousInput !== '') {
-                calculateResult();
+        // API Keys (ในทางปฏิบัติควรเก็บในเซิร์ฟเวอร์และเรียกผ่าน API ของคุณเอง)
+        const WEATHERAPI_KEY = "cdc3a059cac345ad9f6103850252304";
+        const OPENWEATHER_API_KEY = "f9f4a1961d28e42e62df04b32f75b0ab";
+        const WAQI_TOKEN = "31e480eadcd87b6713f349582e1703e268a1da52";
+        
+        // ข้อมูลสถานที่
+        let locations = JSON.parse(localStorage.getItem('weather_locations')) || [];
+        let currentLocationId = locations.length > 0 ? locations[0].id : null;
+        
+        // โหลดหน้าเว็บ
+        document.addEventListener('DOMContentLoaded', function() {
+            updateLocationSelects();
+            setupMenuButtons();
+            
+            // โหลดข้อมูลเริ่มต้นหากมีสถานที่
+            if (currentLocationId) {
+                loadWeatherData(currentLocationId, '7-day');
             }
-            operator = op;
-            previousInput = currentInput;
-            currentInput = '';
+        });
+        
+        // ตั้งค่าปุ่มเมนู
+        function setupMenuButtons() {
+            document.querySelectorAll('.menu-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const target = this.dataset.target;
+                    
+                    if (target) {
+                        // เปลี่ยนเมนูที่ active
+                        document.querySelectorAll('.menu-btn').forEach(b => b.classList.remove('active'));
+                        this.classList.add('active');
+                        
+                        // เปลี่ยนเนื้อหาที่แสดง
+                        document.querySelectorAll('.content').forEach(c => c.classList.remove('active'));
+                        document.getElementById(target).classList.add('active');
+                        
+                        // โหลดข้อมูลหากจำเป็น
+                        if (target !== 'add-location' && currentLocationId) {
+                            loadWeatherData(currentLocationId, target);
+                        }
+                    }
+                });
+            });
+            
+            // ปุ่มตรวจสอบ API
+            document.getElementById('check-api-btn').addEventListener('click', checkApiStatus);
         }
-
-        function clearResult() {
-            currentInput = '';
-            previousInput = '';
-            operator = '';
-            document.getElementById('result').value = '';
+        
+        // อัพเดท dropdown สถานที่ทั้งหมด
+        function updateLocationSelects() {
+            const selects = [
+                'location-7day',
+                'location-hourly',
+                'location-aqi',
+                'location-advice',
+                'location-sun',
+                'location-stats'
+            ];
+            
+            selects.forEach(selectId => {
+                const select = document.getElementById(selectId);
+                select.innerHTML = '';
+                
+                if (locations.length === 0) {
+                    const option = document.createElement('option');
+                    option.value = '';
+                    option.textContent = 'ไม่มีสถานที่ (กรุณาเพิ่มสถานที่)';
+                    select.appendChild(option);
+                } else {
+                    locations.forEach(loc => {
+                        const option = document.createElement('option');
+                        option.value = loc.id;
+                        option.textContent = `${loc.name} (${loc.latitude.toFixed(4)}, ${loc.longitude.toFixed(4)})`;
+                        if (loc.id === currentLocationId) {
+                            option.selected = true;
+                        }
+                        select.appendChild(option);
+                    });
+                }
+                
+                // เพิ่ม event listener สำหรับการเปลี่ยนสถานที่
+                select.addEventListener('change', function() {
+                    currentLocationId = this.value;
+                    const contentId = this.id.replace('location-', '').replace('7day', '7-day');
+                    loadWeatherData(currentLocationId, contentId);
+                });
+            });
         }
-
-        function calculateResult() {
-            if (operator === '' || currentInput === '' || previousInput === '') return;
-            let result;
-            switch (operator) {
-                case '+':
-                    result = parseFloat(previousInput) + parseFloat(currentInput);
-                    break;
-                case '-':
-                    result = parseFloat(previousInput) - parseFloat(currentInput);
-                    break;
-                case '*':
-                    result = parseFloat(previousInput) * parseFloat(currentInput);
-                    break;
-                case '/':
-                    result = parseFloat(previousInput) / parseFloat(currentInput);
-                    break;
-                default:
-                    return;
+        
+        // โหลดข้อมูลสภาพอากาศ
+        async function loadWeatherData(locationId, type) {
+            const location = locations.find(loc => loc.id === locationId);
+            if (!location) return;
+            
+            const containerId = type === '7-day' ? '7-day-forecast' : 
+                               type === 'hourly' ? 'hourly-forecast' : 
+                               type === 'air-quality' ? 'aqi-data' : 
+                               type === 'advice' ? 'daily-advice' : 
+                               type === 'sun-info' ? 'sun-data' : 
+                               'weather-stats';
+            
+            const container = document.getElementById(containerId);
+            container.innerHTML = '<div class="loading"><i class="fas fa-spinner fa-spin"></i> กำลังโหลดข้อมูล...</div>';
+            
+            try {
+                let data;
+                
+                switch (type) {
+                    case '7-day':
+                        data = await getCombined7DayForecast(location.latitude, location.longitude);
+                        display7DayForecast(data);
+                        break;
+                    case 'hourly':
+                        data = await getCombinedHourlyWeather(location.latitude, location.longitude);
+                        displayHourlyForecast(data);
+                        break;
+                    case 'air-quality':
+                        data = await getAirQuality(location.latitude, location.longitude);
+                        displayAirQuality(data);
+                        break;
+                    case 'advice':
+                        const weatherData = await getCombined7DayForecast(location.latitude, location.longitude);
+                        const airQualityData = await getAirQuality(location.latitude, location.longitude);
+                        const advice = getDailyAdvice(weatherData, airQualityData);
+                        displayDailyAdvice(advice);
+                        break;
+                    case 'sun-info':
+                        data = await getSunriseSunset(location.latitude, location.longitude);
+                        displaySunInfo(data);
+                        break;
+                    case 'statistics':
+                        data = await calculateExtendedAverages(locationId);
+                        displayStatistics(data);
+                        break;
+                }
+            } catch (error) {
+                console.error('Error loading weather data:', error);
+                container.innerHTML = `<div class="error"><i class="fas fa-exclamation-triangle"></i> เกิดข้อผิดพลาด: ${error.message}</div>`;
             }
-            document.getElementById('result').value = result;
-            previousInput = result;
-            currentInput = '';
-            operator = '';
+        }
+        
+        // ฟังก์ชันเรียก API ต่างๆ (เหมือนในโค้ด Python)
+        async function getCombined7DayForecast(lat, lon) {
+            try {
+                // เรียก API ทั้งหมดแบบขนาน
+                const [openmeteoData, openweatherData, weatherapiData] = await Promise.all([
+                    get7DayWeather(lat, lon),
+                    getOpenWeatherData(lat, lon),
+                    getWeatherAPIData(lat, lon)
+                ]);
+                
+                if (!openmeteoData || !openmeteoData.length) return [];
+                
+                const combinedForecast = [];
+                
+                for (let i = 0; i < openmeteoData.length; i++) {
+                    const meteoDay = openmeteoData[i];
+                    const combined = {...meteoDay};
+                    
+                    // เฉลี่ยข้อมูลจาก WeatherAPI ถ้ามี
+                    if (weatherapiData && weatherapiData.forecast && weatherapiData.forecast.forecastday && i < weatherapiData.forecast.forecastday.length) {
+                        const waDay = weatherapiData.forecast.forecastday[i].day;
+                        
+                        if (waDay.maxtemp_c !== undefined) {
+                            combined["อุณหภูมิสูงสุด"] = round((combined["อุณหภูมิสูงสุด"] + waDay.maxtemp_c) / 2, 1);
+                        }
+                        
+                        if (waDay.mintemp_c !== undefined) {
+                            combined["อุณหภูมิต่ำสุด"] = round((combined["อุณหภูมิต่ำสุด"] + waDay.mintemp_c) / 2, 1);
+                        }
+                        
+                        if (waDay.daily_chance_of_rain !== undefined) {
+                            combined["โอกาสฝนตก"] = round((combined["โอกาสฝนตก"] + waDay.daily_chance_of_rain) / 2);
+                        }
+                        
+                        if (waDay.avghumidity !== undefined) {
+                            combined["ความชื้นเฉลี่ย (%)"] = combined["ความชื้นเฉลี่ย (%)"] ? 
+                                round((combined["ความชื้นเฉลี่ย (%)"] + waDay.avghumidity) / 2) : 
+                                waDay.avghumidity;
+                        }
+                    }
+                    
+                    // เฉลี่ยข้อมูลจาก OpenWeatherMap ถ้ามี
+                    if (openweatherData && openweatherData.main) {
+                        const main = openweatherData.main;
+                        
+                        if (main.temp !== undefined) {
+                            combined["อุณหภูมิสูงสุด"] = round((combined["อุณหภูมิสูงสุด"] + main.temp) / 2, 1);
+                            combined["อุณหภูมิต่ำสุด"] = round((combined["อุณหภูมิต่ำสุด"] + main.temp) / 2, 1);
+                        }
+                        
+                        if (main.humidity !== undefined) {
+                            combined["ความชื้นเฉลี่ย (%)"] = combined["ความชื้นเฉลี่ย (%)"] ? 
+                                round((combined["ความชื้นเฉลี่ย (%)"] + main.humidity) / 2) : 
+                                main.humidity;
+                        }
+                        
+                        if (main.pressure !== undefined) {
+                            combined["ความดันอากาศ (hPa)"] = main.pressure;
+                        }
+                    }
+                    
+                    combinedForecast.push(combined);
+                }
+                
+                return combinedForecast;
+            } catch (error) {
+                console.error('Error combining 7-day forecast:', error);
+                throw error;
+            }
+        }
+        
+        async function getCombinedHourlyWeather(lat, lon) {
+            try {
+                // เรียก API ทั้งหมดแบบขนาน
+                const [meteoData, owData, waData] = await Promise.all([
+                    getHourlyWeather(lat, lon),
+                    getOpenWeatherData(lat, lon),
+                    getWeatherAPIData(lat, lon)
+                ]);
+                
+                if (!meteoData || !meteoData.hourly) return [];
+                
+                const hourly = meteoData.hourly;
+                const hoursToShow = Math.min(24, hourly.time.length);
+                const forecast = [];
+                
+                // ข้อมูลจาก OpenWeatherMap
+                const owTemp = owData?.main?.temp;
+                const owHumidity = owData?.main?.humidity;
+                const owWind = owData?.wind?.speed ? owData.wind.speed * 3.6 : null; // m/s to km/h
+                
+                // ข้อมูลจาก WeatherAPI
+                const waHours = waData?.forecast?.forecastday?.[0]?.hour || [];
+                
+                for (let i = 0; i < hoursToShow; i++) {
+                    const timeStr = hourly.time[i];
+                    const dt = new Date(timeStr);
+                    const thaiTime = dt.toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' });
+                    
+                    // ข้อมูลพื้นฐานจาก Open-Meteo
+                    let temp = hourly.temperature_2m[i];
+                    let humidity = hourly.relativehumidity_2m[i];
+                    let wind = hourly.windspeed_10m[i];
+                    let rain = hourly.precipitation_probability[i];
+                    
+                    // ข้อมูลจาก WeatherAPI
+                    const waHour = waHours[i];
+                    const waTemp = waHour?.temp_c;
+                    const waHumidity = waHour?.humidity;
+                    const waWind = waHour?.wind_kph;
+                    const waRain = waHour?.chance_of_rain;
+                    
+                    // เฉลี่ยอุณหภูมิ
+                    const temps = [temp];
+                    if (owTemp !== undefined) temps.push(owTemp);
+                    if (waTemp !== undefined) temps.push(waTemp);
+                    temp = round(temps.reduce((a, b) => a + b, 0) / temps.length, 1);
+                    
+                    // เฉลี่ยความชื้น
+                    const hums = [humidity];
+                    if (owHumidity !== undefined) hums.push(owHumidity);
+                    if (waHumidity !== undefined) hums.push(waHumidity);
+                    humidity = round(hums.reduce((a, b) => a + b, 0) / hums.length);
+                    
+                    // เฉลี่ยความเร็วลม
+                    const winds = [wind];
+                    if (owWind !== undefined) winds.push(owWind);
+                    if (waWind !== undefined) winds.push(waWind);
+                    wind = round(winds.reduce((a, b) => a + b, 0) / winds.length, 1);
+                    
+                    // เฉลี่ยโอกาสฝนตก
+                    const rains = [rain];
+                    if (waRain !== undefined) rains.push(waRain);
+                    rain = round(rains.reduce((a, b) => a + b, 0) / rains.length);
+                    
+                    forecast.push({
+                        "เวลา": thaiTime,
+                        "อุณหภูมิ (°C)": temp,
+                        "ความชื้น (%)": humidity,
+                        "โอกาสฝนตก (%)": rain,
+                        "ความเร็วลม (km/h)": wind,
+                        "สภาพอากาศ": weatherDescription(hourly.weathercode[i])
+                    });
+                }
+                
+                return forecast;
+            } catch (error) {
+                console.error('Error combining hourly weather:', error);
+                throw error;
+            }
+        }
+        
+        // ฟังก์ชันเรียก API ต่างๆ
+        async function get7DayWeather(lat, lon) {
+            const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&daily=temperature_2m_max,temperature_2m_min,precipitation_probability_max,weathercode&hourly=relativehumidity_2m&timezone=auto`;
+            
+            try {
+                const response = await fetch(url);
+                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                
+                const data = await response.json();
+                if (!data.daily || !data.hourly) return [];
+                
+                const daily = data.daily;
+                const hourlyHumidity = data.hourly.relativehumidity_2m;
+                
+                const daysHumidity = [];
+                for (let i = 0; i < 7; i++) {
+                    const startIdx = i * 24;
+                    const endIdx = startIdx + 24;
+                    const dayHumidity = hourlyHumidity.slice(startIdx, endIdx);
+                    const avgHumidity = dayHumidity.length ? round(dayHumidity.reduce((a, b) => a + b, 0) / dayHumidity.length) : null;
+                    daysHumidity.push(avgHumidity);
+                }
+                
+                const forecast = [];
+                for (let i = 0; i < 7; i++) {
+                    const date = new Date(daily.time[i]);
+                    const thaiDay = date.toLocaleDateString('th-TH', { weekday: 'long' });
+                    
+                    forecast.push({
+                        "วัน": thaiDay,
+                        "วันที่": daily.time[i],
+                        "อุณหภูมิสูงสุด": daily.temperature_2m_max[i],
+                        "อุณหภูมิต่ำสุด": daily.temperature_2m_min[i],
+                        "โอกาสฝนตก": daily.precipitation_probability_max[i],
+                        "ความชื้นเฉลี่ย (%)": daysHumidity[i],
+                        "สภาพอากาศ": weatherDescription(daily.weathercode[i])
+                    });
+                }
+                
+                return forecast;
+            } catch (error) {
+                console.error('Error fetching 7-day weather:', error);
+                throw error;
+            }
+        }
+        
+        async function getHourlyWeather(lat, lon) {
+            const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&hourly=temperature_2m,relativehumidity_2m,precipitation_probability,weathercode,windspeed_10m&timezone=auto`;
+            
+            try {
+                const response = await fetch(url);
+                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                return await response.json();
+            } catch (error) {
+                console.error('Error fetching hourly weather:', error);
+                throw error;
+            }
+        }
+        
+        async function getOpenWeatherData(lat, lon) {
+            const url = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${OPENWEATHER_API_KEY}&units=metric`;
+            
+            try {
+                const response = await fetch(url);
+                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                return await response.json();
+            } catch (error) {
+                console.error('Error fetching OpenWeather data:', error);
+                throw error;
+            }
+        }
+        
+        async function getWeatherAPIData(lat, lon) {
+            const url = `http://api.weatherapi.com/v1/forecast.json?key=${WEATHERAPI_KEY}&q=${lat},${lon}&days=7&aqi=no&alerts=no`;
+            
+            try {
+                const response = await fetch(url);
+                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                return await response.json();
+            } catch (error) {
+                console.error('Error fetching WeatherAPI data:', error);
+                throw error;
+            }
+        }
+        
+        async function getAirQuality(lat, lon) {
+            const url = `https://api.waqi.info/feed/geo:${lat};${lon}/?token=${WAQI_TOKEN}`;
+            
+            try {
+                const response = await fetch(url);
+                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                
+                const data = await response.json();
+                if (data.status !== "ok") throw new Error('Invalid response from WAQI API');
+                
+                const result = {};
+                const aqi = data.data.aqi;
+                
+                if (aqi !== undefined) {
+                    result["aqi"] = {
+                        "value": aqi,
+                        "description": getAqiDescription(aqi)
+                    };
+                }
+                
+                const iaqi = data.data.iaqi || {};
+                for (const [key, val] of Object.entries(iaqi)) {
+                    result[key] = {
+                        "value": val.v,
+                        "description": getAqiDescription(val.v, key === 'p' ? 'p' : null)
+                    };
+                }
+                
+                return result;
+            } catch (error) {
+                console.error('Error fetching air quality:', error);
+                throw error;
+            }
+        }
+        
+        async function getSunriseSunset(lat, lon) {
+            const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&daily=sunrise,sunset&timezone=auto`;
+            
+            try {
+                const response = await fetch(url);
+                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                
+                const data = await response.json();
+                if (!data.daily) return null;
+                
+                const sunrise = data.daily.sunrise[0];
+                const sunset = data.daily.sunset[0];
+                const dayLength = calculateDayLength(sunrise, sunset);
+                
+                return {
+                    "sunrise": sunrise,
+                    "sunset": sunset,
+                    "day_length": dayLength
+                };
+            } catch (error) {
+                console.error('Error fetching sunrise/sunset:', error);
+                throw error;
+            }
+        }
+        
+        // ฟังก์ชันคำนวณและช่วยเหลือ
+        function calculateDayLength(sunrise, sunset) {
+            try {
+                const sunriseTime = new Date(sunrise);
+                const sunsetTime = new Date(sunset);
+                const diffMs = sunsetTime - sunriseTime;
+                
+                const hours = Math.floor(diffMs / (1000 * 60 * 60));
+                const minutes = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
+                
+                return `${hours} ชั่วโมง ${minutes} นาที`;
+            } catch {
+                return "ไม่สามารถคำนวณได้";
+            }
+        }
+        
+        function weatherDescription(code) {
+            const descriptions = {
+                0: "☀️ ท้องฟ้าแจ่มใส",
+                1: "⛅ มีเมฆบางส่วน",
+                2: "⛅ มีเมฆบางส่วน",
+                3: "☁️ เมฆมาก",
+                45: "🌫️ หมอก",
+                48: "🌫️ หมอก",
+                51: "🌦️ ฝนปรอยๆ",
+                53: "🌦️ ฝนปรอยๆ",
+                55: "🌦️ ฝนปรอยๆ",
+                56: "🌧️ ฝนตกเล็กน้อย",
+                57: "🌧️ ฝนตกเล็กน้อย",
+                61: "🌧️ ฝนตกเล็กน้อย",
+                63: "🌧️ ฝนตกปานกลาง",
+                65: "🌧️ ฝนตกหนัก",
+                66: "🌧️ ฝนแข็ง",
+                67: "🌧️ ฝนแข็ง",
+                71: "❄️ หิมะตกเล็กน้อย",
+                73: "❄️ หิมะตกปานกลาง",
+                75: "❄️ หิมะตกหนัก",
+                77: "❄️ หิมะตก",
+                80: "🌧️ ฝนตก",
+                81: "🌧️ ฝนตกหนัก",
+                82: "🌧️ ฝนตกหนักมาก",
+                85: "❄️ หิมะตก",
+                86: "❄️ หิมะตกหนัก",
+                95: "⛈️ ฝนฟ้าคะนอง",
+                96: "⛈️ ฝนฟ้าคะนอง",
+                99: "⛈️ ฝนฟ้าคะนองรุนแรง"
+            };
+            return descriptions[code] || "❓ ไม่ทราบสภาพอากาศ";
+        }
+        
+        function getAqiDescription(value, parameter = null) {
+            if (value === null || value === undefined) return "ไม่มีข้อมูล";
+            
+            if (parameter === 'p') {
+                try {
+                    value = parseFloat(value);
+                    if (950 <= value && value <= 1050) return "ปกติ";
+                    else return "ผิดปกติ";
+                } catch {
+                    return "ข้อมูลผิดพลาด";
+                }
+            }
+            
+            try {
+                value = parseFloat(value);
+                if (value <= 50) return "ดีมาก";
+                else if (value <= 100) return "ปานกลาง";
+                else if (value <= 150) return "เริ่มมีผลกระทบ";
+                else if (value <= 200) return "ไม่ดีต่อสุขภาพ";
+                else if (value <= 300) return "อันตราย";
+                else return "อันตรายมาก";
+            } catch {
+                return "ข้อมูลผิดพลาด";
+            }
+        }
+        
+        function getDailyAdvice(weatherData, airQualityData) {
+            const advice = [];
+            
+            if (weatherData && weatherData.length > 0) {
+                const today = weatherData[0];
+                const maxTemp = today["อุณหภูมิสูงสุด"] || 0;
+                const minTemp = today["อุณหภูมิต่ำสุด"] || 0;
+                const rainChance = today["โอกาสฝนตก"] || 0;
+                const weatherDesc = today["สภาพอากาศ"] || "";
+                
+                if (maxTemp > 35) {
+                    advice.push("🌞 อากาศร้อนจัด! ควรดื่มน้ำมากๆ และหลีกเลี่ยงกิจกรรมกลางแจ้งในช่วงบ่าย");
+                } else if (maxTemp > 30) {
+                    advice.push("☀️ อากาศร้อน ควรสวมใส่เสื้อผ้าสบายๆ และทาครีมกันแดด");
+                } else if (minTemp < 20) {
+                    advice.push("❄️ อากาศเย็น ควรสวมเสื้อแขนยาวหรือสเวตเตอร์");
+                }
+                
+                if (rainChance > 70) {
+                    advice.push("☔ โอกาสฝนตกสูง ควรพกร่มหรือเสื้อกันฝน");
+                } else if (rainChance > 40) {
+                    advice.push("🌦️ อาจมีฝนตก ควรเตรียมพร้อมสำหรับฝน");
+                }
+                
+                if (weatherDesc.includes("ฝน")) {
+                    advice.push("⚠️ ถนนอาจลื่น ควรขับรถด้วยความระมัดระวัง");
+                }
+                if (weatherDesc.includes("พายุ")) {
+                    advice.push("⛈️ มีพายุ ควรอยู่ภายในอาคารและตรวจสอบข่าวสารอย่างใกล้ชิด");
+                }
+                if (weatherDesc.includes("หมอก")) {
+                    advice.push("🌫️ มีหมอก ควรขับรถด้วยความระมัดระวังและเปิดไฟหน้า");
+                }
+            }
+            
+            if (airQualityData) {
+                const aqi = airQualityData.aqi?.value;
+                if (aqi) {
+                    if (aqi > 200) {
+                        advice.push("😷 คุณภาพอากาศแย่มาก! ควรอยู่ภายในอาคารและใช้หน้ากากอนามัยหากต้องออกนอกบ้าน");
+                    } else if (aqi > 150) {
+                        advice.push("🤧 คุณภาพอากาศไม่ดี กลุ่มเสี่ยงควรหลีกเลี่ยงกิจกรรมกลางแจ้ง");
+                    } else if (aqi > 100) {
+                        advice.push("🌫️ คุณภาพอากาศปานกลาง ควรลดกิจกรรมหนักกลางแจ้ง");
+                    }
+                }
+                
+                const pm25 = airQualityData.pm25?.value;
+                if (pm25 && pm25 > 75) {
+                    advice.push("💨 ฝุ่น PM2.5 สูง ควรใช้หน้ากาก N95 หากต้องอยู่กลางแจ้งเป็นเวลานาน");
+                }
+            }
+            
+            advice.push("💧 ดื่มน้ำให้เพียงพอตลอดทั้งวัน");
+            
+            if (advice.length === 1) {
+                advice.push("🌤️ อากาศดี today! เป็นวันที่เหมาะสำหรับกิจกรรมกลางแจ้ง");
+            }
+            
+            return advice;
+        }
+        
+        async function calculateExtendedAverages(locationId) {
+            // ในเว็บแอปจริง ควรเรียก API ไปยังเซิร์ฟเวอร์ของคุณเพื่อคำนวณค่าเฉลี่ย
+            // ที่นี่เราจะใช้ข้อมูลตัวอย่าง
+            return {
+                "temp_avg": 28.5,
+                "humidity_avg": 72,
+                "pressure_avg": 1012,
+                "rain_avg": 15,
+                "wind_avg": 10.5,
+                "aqi_avg": 65,
+                "pm25_avg": 28.3,
+                "data_points": 24
+            };
+        }
+        
+        // ฟังก์ชันแสดงผล
+        function display7DayForecast(data) {
+            const container = document.getElementById('7-day-forecast');
+            
+            if (!data || data.length === 0) {
+                container.innerHTML = '<div class="error">ไม่พบข้อมูลพยากรณ์อากาศ</div>';
+                return;
+            }
+            
+            let html = '';
+            
+            data.forEach(day => {
+                html += `
+                    <div class="weather-card">
+                        <div class="weather-header">
+                            <h3>${day['วัน']} (${day['วันที่']})</h3>
+                            <div>${day['สภาพอากาศ']}</div>
+                        </div>
+                        <div class="weather-details">
+                            <div class="detail-item">
+                                <div>อุณหภูมิสูงสุด</div>
+                                <div class="temp-max">${day['อุณหภูมิสูงสุด']}°C</div>
+                            </div>
+                            <div class="detail-item">
+                                <div>อุณหภูมิต่ำสุด</div>
+                                <div class="temp-min">${day['อุณหภูมิต่ำสุด']}°C</div>
+                            </div>
+                            <div class="detail-item">
+                                <div>โอกาสฝนตก</div>
+                                <div>${day['โอกาสฝนตก']}%</div>
+                            </div>
+                            <div class="detail-item">
+                                <div>ความชื้นเฉลี่ย</div>
+                                <div>${day['ความชื้นเฉลี่ย (%)']}%</div>
+                            </div>
+                            ${day['ความดันอากาศ (hPa)'] ? `
+                            <div class="detail-item">
+                                <div>ความดันอากาศ</div>
+                                <div>${day['ความดันอากาศ (hPa)']} hPa</div>
+                            </div>
+                            ` : ''}
+                        </div>
+                    </div>
+                `;
+            });
+            
+            container.innerHTML = html;
+        }
+        
+        function displayHourlyForecast(data) {
+            const container = document.getElementById('hourly-forecast');
+            
+            if (!data || data.length === 0) {
+                container.innerHTML = '<div class="error">ไม่พบข้อมูลพยากรณ์รายชั่วโมง</div>';
+                return;
+            }
+            
+            let html = '';
+            
+            data.forEach(hour => {
+                html += `
+                    <div class="hour-item">
+                        <div><strong>${hour['เวลา']}</strong></div>
+                        <div>${hour['อุณหภูมิ (°C)']}°C</div>
+                        <div>${hour['ความชื้น (%)']}%</div>
+                        <div>${hour['โอกาสฝนตก (%)']}%</div>
+                        <div>${hour['สภาพอากาศ']}</div>
+                    </div>
+                `;
+            });
+            
+            container.innerHTML = html;
+        }
+        
+        function displayAirQuality(data) {
+            const container = document.getElementById('aqi-data');
+            
+            if (!data) {
+                container.innerHTML = '<div class="error">ไม่พบข้อมูลคุณภาพอากาศ</div>';
+                return;
+            }
+            
+            let html = '<div class="weather-card">';
+            
+            if (data.aqi) {
+                html += `
+                    <h3>AQI โดยรวม: ${data.aqi.value} (${data.aqi.description})</h3>
+                    <div class="aqi-indicator" style="width: ${Math.min(data.aqi.value, 300)}%;"></div>
+                `;
+            }
+            
+            const units = {
+                'co': 'ppm', 'dew': '°C', 'h': '%', 'no2': 'ppb', 
+                'p': 'hPa', 'pm10': 'µg/m³', 'pm25': 'µg/m³', 
+                'so2': 'ppb', 't': '°C', 'w': 'm/s'
+            };
+            
+            for (const [key, val] of Object.entries(data)) {
+                if (key === 'aqi') continue;
+                
+                const unit = units[key] || 'µg/m³';
+                html += `
+                    <div class="detail-item">
+                        <div>${key.toUpperCase()}: ${val.value !== undefined ? val.value.toFixed(1) : 'ไม่มีข้อมูล'} ${unit}</div>
+                        <div>${val.description}</div>
+                    </div>
+                `;
+            }
+            
+            html += '</div>';
+            container.innerHTML = html;
+        }
+        
+        function displayDailyAdvice(advice) {
+            const container = document.getElementById('daily-advice');
+            
+            if (!advice || advice.length === 0) {
+                container.innerHTML = '<div class="error">ไม่มีคำแนะนำในขณะนี้</div>';
+                return;
+            }
+            
+            let html = '<ul class="advice-list">';
+            
+            advice.forEach(item => {
+                html += `<li class="advice-item">${item}</li>`;
+            });
+            
+            html += '</ul>';
+            container.innerHTML = html;
+        }
+        
+        function displaySunInfo(data) {
+            const container = document.getElementById('sun-data');
+            
+            if (!data) {
+                container.innerHTML = '<div class="error">ไม่พบข้อมูลดวงอาทิตย์</div>';
+                return;
+            }
+            
+            const html = `
+                <div class="weather-card">
+                    <h3>ดวงอาทิตย์ขึ้น</h3>
+                    <p>${formatTime(data.sunrise)}</p>
+                    
+                    <h3>ดวงอาทิตย์ตก</h3>
+                    <p>${formatTime(data.sunset)}</p>
+                    
+                    <h3>ความยาววัน</h3>
+                    <p>${data.day_length}</p>
+                    
+                    <h3>คำแนะนำ</h3>
+                    <ul class="advice-list">
+                        <li class="advice-item">เวลาที่ดีที่สุดสำหรับการถ่ายภาพ: 1 ชั่วโมงหลังดวงอาทิตย์ขึ้นหรือก่อนดวงอาทิตย์ตก</li>
+                        <li class="advice-item">ควรทาครีมกันแดดเมื่อดัชนี UV สูง (10:00-14:00)</li>
+                    </ul>
+                </div>
+            `;
+            
+            container.innerHTML = html;
+        }
+        
+        function displayStatistics(stats) {
+            const container = document.getElementById('weather-stats');
+            
+            if (!stats) {
+                container.innerHTML = '<div class="error">ไม่พบข้อมูลสถิติ</div>';
+                return;
+            }
+            
+            const html = `
+                <div class="weather-card">
+                    <h3>สถิติจาก ${stats.data_points} ครั้งล่าสุด</h3>
+                    
+                    <div class="weather-details">
+                        <div class="detail-item">
+                            <div>อุณหภูมิเฉลี่ย</div>
+                            <div>${stats.temp_avg}°C</div>
+                        </div>
+                        <div class="detail-item">
+                            <div>ความชื้นเฉลี่ย</div>
+                            <div>${stats.humidity_avg}%</div>
+                        </div>
+                        <div class="detail-item">
+                            <div>ความดันอากาศเฉลี่ย</div>
+                            <div>${stats.pressure_avg} hPa</div>
+                        </div>
+                        <div class="detail-item">
+                            <div>โอกาสฝนตกเฉลี่ย</div>
+                            <div>${stats.rain_avg}%</div>
+                        </div>
+                        <div class="detail-item">
+                            <div>ความเร็วลมเฉลี่ย</div>
+                            <div>${stats.wind_avg} km/h</div>
+                        </div>
+                        <div class="detail-item">
+                            <div>ค่า AQI เฉลี่ย</div>
+                            <div>${stats.aqi_avg}</div>
+                        </div>
+                        <div class="detail-item">
+                            <div>ค่า PM2.5 เฉลี่ย</div>
+                            <div>${stats.pm25_avg} µg/m³</div>
+                        </div>
+                    </div>
+                    
+                    <h3>กราฟสถิติ</h3>
+                    <div>
+                        <p>อุณหภูมิ: ${'█'.repeat(Math.floor(stats.temp_avg))}</p>
+                        <p>ความชื้น: ${'█'.repeat(Math.floor(stats.humidity_avg / 2))}</p>
+                        <p>โอกาสฝน: ${'█'.repeat(Math.floor(stats.rain_avg / 5))}</p>
+                    </div>
+                </div>
+            `;
+            
+            container.innerHTML = html;
+        }
+        
+        // ตรวจสอบสถานะ API
+        async function checkApiStatus() {
+            const apis = {
+                "Open-Meteo": "https://api.open-meteo.com/v1/forecast?latitude=13.75&longitude=100.5&hourly=temperature_2m",
+                "OpenWeatherMap": `https://api.openweathermap.org/data/2.5/weather?lat=13.75&lon=100.5&appid=${OPENWEATHER_API_KEY}`,
+                "WeatherAPI": `http://api.weatherapi.com/v1/current.json?key=${WEATHERAPI_KEY}&q=Bangkok`,
+                "WAQI": `https://api.waqi.info/feed/geo:13.75;100.5/?token=${WAQI_TOKEN}`
+            };
+            
+            const container = document.getElementById('api-status-results');
+            container.innerHTML = '<div class="loading"><i class="fas fa-spinner fa-spin"></i> กำลังตรวจสอบสถานะ API...</div>';
+            
+            // แสดงหน้าสถานะ API
+            document.querySelectorAll('.content').forEach(c => c.classList.remove('active'));
+            document.getElementById('api-status').classList.add('active');
+            
+            // เปลี่ยนเมนูที่ active
+            document.querySelectorAll('.menu-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById('check-api-btn').classList.add('active');
+            
+            let html = '<div class="weather-card"><h3>สถานะ API ที่ใช้งาน</h3>';
+            
+            // ตรวจสอบ API ทั้งหมดแบบขนาน
+            const results = await Promise.allSettled(
+                Object.entries(apis).map(async ([name, url]) => {
+                    try {
+                        const startTime = performance.now();
+                        const response = await fetch(url, { method: 'HEAD' });
+                        const endTime = performance.now();
+                        const responseTime = Math.round(endTime - startTime);
+                        
+                        if (!response.ok) {
+                            return {
+                                name,
+                                status: 'error',
+                                message: `HTTP error! status: ${response.status}`,
+                                responseTime
+                            };
+                        }
+                        
+                        return {
+                            name,
+                            status: 'success',
+                            message: 'ออนไลน์ (Key ใช้งานได้)',
+                            responseTime
+                        };
+                    } catch (error) {
+                        return {
+                            name,
+                            status: 'error',
+                            message: error.message,
+                            responseTime: 0
+                        };
+                    }
+                })
+            );
+            
+            results.forEach(result => {
+                const { name, status, message, responseTime } = result.value || result.reason;
+                const color = status === 'success' ? 'color: green;' : 'color: red;';
+                const icon = status === 'success' ? 'fa-check-circle' : 'fa-times-circle';
+                
+                html += `
+                    <p>
+                        <strong>${name}:</strong> 
+                        <span style="${color}"><i class="fas ${icon}"></i> ${message}</span>
+                        ${responseTime ? `(${responseTime} ms)` : ''}
+                    </p>
+                `;
+            });
+            
+            html += '</div>';
+            container.innerHTML = html;
+        }
+        
+        // เพิ่มสถานที่ด้วยพิกัด
+        document.getElementById('add-by-coords').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const name = document.getElementById('location-name').value.trim();
+            const lat = parseFloat(document.getElementById('location-lat').value);
+            const lon = parseFloat(document.getElementById('location-lon').value);
+            
+            if (!name || isNaN(lat) || isNaN(lon)) {
+                alert('กรุณากรอกข้อมูลให้ครบถ้วนและถูกต้อง');
+                return;
+            }
+            
+            const locationId = generateLocationId(lat, lon);
+            
+            // ตรวจสอบว่าสถานที่มีอยู่แล้วหรือไม่
+            if (locations.some(loc => loc.id === locationId)) {
+                alert('สถานที่นี้มีอยู่แล้วในระบบ');
+                return;
+            }
+            
+            locations.push({
+                id: locationId,
+                name: name,
+                latitude: lat,
+                longitude: lon
+            });
+            
+            saveLocations();
+            updateLocationSelects();
+            alert('เพิ่มสถานที่เรียบร้อยแล้ว!');
+            
+            // เคลียร์ฟอร์ม
+            this.reset();
+        });
+        
+        // เพิ่มสถานที่ด้วยชื่อ
+        document.getElementById('add-by-name').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const name = document.getElementById('search-name').value.trim();
+            if (!name) {
+                alert('กรุณากรอกชื่อสถานที่');
+                return;
+            }
+            
+            try {
+                const result = await searchLocationByName(name);
+                if (result) {
+                    const locationId = generateLocationId(result.latitude, result.longitude);
+                    
+                    // ตรวจสอบว่าสถานที่มีอยู่แล้วหรือไม่
+                    if (locations.some(loc => loc.id === locationId)) {
+                        alert('สถานที่นี้มีอยู่แล้วในระบบ');
+                        return;
+                    }
+                    
+                    locations.push({
+                        id: locationId,
+                        name: result.name,
+                        latitude: result.latitude,
+                        longitude: result.longitude
+                    });
+                    
+                    saveLocations();
+                    updateLocationSelects();
+                    alert(`เพิ่ม ${result.name} เรียบร้อยแล้ว!`);
+                    
+                    // เคลียร์ฟอร์ม
+                    this.reset();
+                } else {
+                    alert('ไม่พบสถานที่ที่ค้นหา');
+                }
+            } catch (error) {
+                console.error('Error searching location:', error);
+                alert('เกิดข้อผิดพลาดในการค้นหาสถานที่');
+            }
+        });
+        
+        // ค้นหาสถานที่โดยชื่อ
+        async function searchLocationByName(name) {
+            const url = `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(name)}&count=1&language=th&format=json`;
+            
+            try {
+                const response = await fetch(url);
+                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                
+                const data = await response.json();
+                if (!data.results || data.results.length === 0) return null;
+                
+                const loc = data.results[0];
+                return {
+                    name: loc.name || name,
+                    latitude: loc.latitude,
+                    longitude: loc.longitude
+                };
+            } catch (error) {
+                console.error('Error searching location:', error);
+                throw error;
+            }
+        }
+        
+        // บันทึกสถานที่
+        function saveLocations() {
+            localStorage.setItem('weather_locations', JSON.stringify(locations));
+        }
+        
+        // สร้าง ID จากพิกัด
+        function generateLocationId(lat, lon) {
+            return `${lat.toFixed(4)}_${lon.toFixed(4)}`.replace(/\./g, '');
+        }
+        
+        // จัดรูปแบบเวลา
+        function formatTime(timeStr) {
+            if (!timeStr) return 'ไม่มีข้อมูล';
+            
+            try {
+                const dt = new Date(timeStr);
+                return dt.toLocaleTimeString('th-TH', {
+                    hour: '2-digit',
+                    minute: '2-digit'
+                });
+            } catch {
+                return timeStr;
+            }
+        }
+        
+        // ปัดเศษตัวเลข
+        function round(value, decimals = 0) {
+            return Number(Math.round(value + 'e' + decimals) + 'e-' + decimals);
         }
     </script>
 </body>
