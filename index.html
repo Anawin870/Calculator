@@ -153,22 +153,89 @@
             box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
         }
         
-        .hourly-forecast {
+        /* สไตล์สำหรับการแสดงผลรายชั่วโมงแบบละเอียด */
+        .hourly-detail-container {
             display: flex;
             overflow-x: auto;
-            gap: 8px;
-            padding: 8px 0;
+            gap: 10px;
+            padding: 10px 0;
             -webkit-overflow-scrolling: touch;
         }
         
-        .hour-item {
-            min-width: 100px;
-            padding: 8px;
-            background-color: white;
-            border-radius: 5px;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-            text-align: center;
+        .hour-card {
+            min-width: 150px;
+            padding: 12px;
+            background: linear-gradient(135deg, #f5f7fa, #e4e8eb);
+            border-radius: 10px;
+            box-shadow: 0 3px 6px rgba(0,0,0,0.1);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
             flex-shrink: 0;
+            border: 1px solid #e0e0e0;
+        }
+        
+        .hour-time {
+            font-weight: bold;
+            font-size: 1.1rem;
+            margin-bottom: 8px;
+            color: #2c3e50;
+        }
+        
+        .hour-temp {
+            font-size: 1.4rem;
+            font-weight: bold;
+            margin: 5px 0;
+            color: #e74c3c;
+        }
+        
+        .hour-weather-icon {
+            font-size: 1.8rem;
+            margin: 5px 0;
+        }
+        
+        .hour-detail-item {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            margin: 3px 0;
+            font-size: 0.9rem;
+        }
+        
+        .hour-detail-label {
+            color: #7f8c8d;
+        }
+        
+        .hour-detail-value {
+            font-weight: 500;
+        }
+        
+        .hour-wind-direction {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            background-color: #3498db;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 20px;
+            color: white;
+            font-size: 0.7rem;
+        }
+        
+        .hour-rain-probability {
+            position: relative;
+            width: 100%;
+            height: 5px;
+            background-color: #ecf0f1;
+            border-radius: 3px;
+            margin-top: 5px;
+        }
+        
+        .hour-rain-probability-bar {
+            position: absolute;
+            height: 100%;
+            background: linear-gradient(90deg, #3498db, #2980b9);
+            border-radius: 3px;
         }
         
         .aqi-indicator {
@@ -213,6 +280,10 @@
                 padding: 6px 12px;
                 font-size: 0.8rem;
             }
+            
+            .hour-card {
+                min-width: 140px;
+            }
         }
         
         @media (max-width: 480px) {
@@ -222,6 +293,15 @@
             
             h1 {
                 font-size: 1.5rem;
+            }
+            
+            .hour-card {
+                min-width: 130px;
+                padding: 10px;
+            }
+            
+            .hour-temp {
+                font-size: 1.2rem;
             }
         }
     </style>
@@ -265,7 +345,7 @@
                     <option value="">เลือกสถานที่...</option>
                 </select>
             </div>
-            <div id="hourly-forecast" class="hourly-forecast"></div>
+            <div id="hourly-forecast" class="hourly-detail-container"></div>
         </div>
         
         <!-- Air Quality -->
@@ -492,7 +572,7 @@
             }
         }
         
-        // ฟังก์ชันเรียก API ต่างๆ (เหมือนในโค้ด Python)
+        // ฟังก์ชันเรียก API ต่างๆ
         async function getCombined7DayForecast(lat, lon) {
             try {
                 // เรียก API ทั้งหมดแบบขนาน
@@ -579,9 +659,8 @@
                 const forecast = [];
                 
                 // ข้อมูลจาก OpenWeatherMap
-                const owTemp = owData?.main?.temp;
-                const owHumidity = owData?.main?.humidity;
-                const owWind = owData?.wind?.speed ? owData.wind.speed * 3.6 : null; // m/s to km/h
+                const owMain = owData?.main || {};
+                const owWind = owData?.wind || {};
                 
                 // ข้อมูลจาก WeatherAPI
                 const waHours = waData?.forecast?.forecastday?.[0]?.hour || [];
@@ -594,45 +673,77 @@
                     // ข้อมูลพื้นฐานจาก Open-Meteo
                     let temp = hourly.temperature_2m[i];
                     let humidity = hourly.relativehumidity_2m[i];
-                    let wind = hourly.windspeed_10m[i];
-                    let rain = hourly.precipitation_probability[i];
+                    let windSpeed = hourly.windspeed_10m[i];
+                    let rainProb = hourly.precipitation_probability ? hourly.precipitation_probability[i] : 0;
+                    let pressure = hourly.surface_pressure ? hourly.surface_pressure[i] : null;
                     
                     // ข้อมูลจาก WeatherAPI
                     const waHour = waHours[i];
                     const waTemp = waHour?.temp_c;
                     const waHumidity = waHour?.humidity;
-                    const waWind = waHour?.wind_kph;
-                    const waRain = waHour?.chance_of_rain;
+                    const waWindSpeed = waHour?.wind_kph;
+                    const waRainProb = waHour?.chance_of_rain;
+                    const waRainMm = waHour?.precip_mm;
+                    const waPressure = waHour?.pressure_mb;
+                    const waVis = waHour?.vis_km;
+                    const waFeelsLike = waHour?.feelslike_c;
+                    const waWindDir = waHour?.wind_degree;
                     
                     // เฉลี่ยอุณหภูมิ
                     const temps = [temp];
-                    if (owTemp !== undefined) temps.push(owTemp);
+                    if (owMain.temp !== undefined) temps.push(owMain.temp);
                     if (waTemp !== undefined) temps.push(waTemp);
                     temp = round(temps.reduce((a, b) => a + b, 0) / temps.length, 1);
                     
+                    // อุณหภูมิที่รู้สึก
+                    let feelsLike = waFeelsLike || temp;
+                    if (owMain.feels_like !== undefined) {
+                        feelsLike = round((feelsLike + owMain.feels_like) / 2, 1);
+                    }
+                    
                     // เฉลี่ยความชื้น
                     const hums = [humidity];
-                    if (owHumidity !== undefined) hums.push(owHumidity);
+                    if (owMain.humidity !== undefined) hums.push(owMain.humidity);
                     if (waHumidity !== undefined) hums.push(waHumidity);
                     humidity = round(hums.reduce((a, b) => a + b, 0) / hums.length);
                     
                     // เฉลี่ยความเร็วลม
-                    const winds = [wind];
-                    if (owWind !== undefined) winds.push(owWind);
-                    if (waWind !== undefined) winds.push(waWind);
-                    wind = round(winds.reduce((a, b) => a + b, 0) / winds.length, 1);
+                    const winds = [windSpeed];
+                    if (owWind.speed !== undefined) winds.push(owWind.speed * 3.6); // m/s to km/h
+                    if (waWindSpeed !== undefined) winds.push(waWindSpeed);
+                    windSpeed = round(winds.reduce((a, b) => a + b, 0) / winds.length, 1);
+                    
+                    // ทิศทางลม
+                    let windDirection = owWind.deg || 0;
+                    if (waWindDir !== undefined) {
+                        windDirection = round((windDirection + waWindDir) / 2);
+                    }
                     
                     // เฉลี่ยโอกาสฝนตก
-                    const rains = [rain];
-                    if (waRain !== undefined) rains.push(waRain);
-                    rain = round(rains.reduce((a, b) => a + b, 0) / rains.length);
+                    const rainProbs = [rainProb];
+                    if (waRainProb !== undefined) rainProbs.push(waRainProb);
+                    rainProb = round(rainProbs.reduce((a, b) => a + b, 0) / rainProbs.length);
+                    
+                    // เฉลี่ยความกดอากาศ
+                    let avgPressure = pressure;
+                    if (owMain.pressure !== undefined) {
+                        avgPressure = avgPressure ? round((avgPressure + owMain.pressure) / 2) : owMain.pressure;
+                    }
+                    if (waPressure !== undefined) {
+                        avgPressure = avgPressure ? round((avgPressure + waPressure) / 2) : waPressure;
+                    }
                     
                     forecast.push({
                         "เวลา": thaiTime,
                         "อุณหภูมิ (°C)": temp,
+                        "อุณหภูมิที่รู้สึก": feelsLike,
                         "ความชื้น (%)": humidity,
-                        "โอกาสฝนตก (%)": rain,
-                        "ความเร็วลม (km/h)": wind,
+                        "โอกาสฝนตก (%)": rainProb,
+                        "ปริมาณฝน": waRainMm,
+                        "ความเร็วลม (km/h)": windSpeed,
+                        "ทิศทางลม": windDirection,
+                        "ความกดอากาศ": avgPressure,
+                        "ทัศนวิสัย": waVis,
                         "สภาพอากาศ": weatherDescription(hourly.weathercode[i])
                     });
                 }
@@ -644,7 +755,6 @@
             }
         }
         
-        // ฟังก์ชันเรียก API ต่างๆ
         async function get7DayWeather(lat, lon) {
             const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&daily=temperature_2m_max,temperature_2m_min,precipitation_probability_max,weathercode&hourly=relativehumidity_2m&timezone=auto`;
             
@@ -691,7 +801,7 @@
         }
         
         async function getHourlyWeather(lat, lon) {
-            const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&hourly=temperature_2m,relativehumidity_2m,precipitation_probability,weathercode,windspeed_10m&timezone=auto`;
+            const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&hourly=temperature_2m,relativehumidity_2m,precipitation_probability,weathercode,windspeed_10m,surface_pressure&timezone=auto`;
             
             try {
                 const response = await fetch(url);
@@ -1002,18 +1112,79 @@
             let html = '';
             
             data.forEach(hour => {
+                const windDirectionIcon = getWindDirectionIcon(hour['ทิศทางลม']);
+                const rainProbability = hour['โอกาสฝนตก (%)'] || 0;
+                
                 html += `
-                    <div class="hour-item">
-                        <div><strong>${hour['เวลา']}</strong></div>
-                        <div>${hour['อุณหภูมิ (°C)']}°C</div>
-                        <div>${hour['ความชื้น (%)']}%</div>
-                        <div>${hour['โอกาสฝนตก (%)']}%</div>
-                        <div>${hour['สภาพอากาศ']}</div>
+                    <div class="hour-card">
+                        <div class="hour-time">${hour['เวลา']}</div>
+                        <div class="hour-temp">${hour['อุณหภูมิ (°C)']}°C</div>
+                        <div class="hour-weather-icon">${hour['สภาพอากาศ']}</div>
+                        
+                        <div class="hour-detail-item">
+                            <span class="hour-detail-label">รู้สึกเหมือน:</span>
+                            <span class="hour-detail-value">${hour['อุณหภูมิที่รู้สึก']}°C</span>
+                        </div>
+                        
+                        <div class="hour-detail-item">
+                            <span class="hour-detail-label">ความชื้น:</span>
+                            <span class="hour-detail-value">${hour['ความชื้น (%)']}%</span>
+                        </div>
+                        
+                        <div class="hour-detail-item">
+                            <span class="hour-detail-label">ลม:</span>
+                            <span class="hour-detail-value">
+                                ${hour['ความเร็วลม (km/h)']} km/h 
+                                ${windDirectionIcon}
+                            </span>
+                        </div>
+                        
+                        ${hour['ความกดอากาศ'] ? `
+                        <div class="hour-detail-item">
+                            <span class="hour-detail-label">ความกดอากาศ:</span>
+                            <span class="hour-detail-value">${hour['ความกดอากาศ']} hPa</span>
+                        </div>
+                        ` : ''}
+                        
+                        <div class="hour-detail-item">
+                            <span class="hour-detail-label">โอกาสฝน:</span>
+                            <span class="hour-detail-value">${rainProbability}%</span>
+                        </div>
+                        
+                        <div class="hour-rain-probability">
+                            <div class="hour-rain-probability-bar" style="width: ${rainProbability}%;"></div>
+                        </div>
+                        
+                        ${hour['ปริมาณฝน'] ? `
+                        <div class="hour-detail-item">
+                            <span class="hour-detail-label">ปริมาณฝน:</span>
+                            <span class="hour-detail-value">${hour['ปริมาณฝน']} mm</span>
+                        </div>
+                        ` : ''}
+                        
+                        ${hour['ทัศนวิสัย'] ? `
+                        <div class="hour-detail-item">
+                            <span class="hour-detail-label">ทัศนวิสัย:</span>
+                            <span class="hour-detail-value">${hour['ทัศนวิสัย']} km</span>
+                        </div>
+                        ` : ''}
                     </div>
                 `;
             });
             
+            html += '</div>';
             container.innerHTML = html;
+        }
+        
+        // ฟังก์ชันแปลงทิศทางลมเป็นไอคอน
+        function getWindDirectionIcon(degrees) {
+            if (degrees === undefined) return '';
+            
+            // แปลงองศาเป็นทิศทาง
+            const directions = ['↑ N', '↗ NE', '→ E', '↘ SE', '↓ S', '↙ SW', '← W', '↖ NW'];
+            const index = Math.round((degrees % 360) / 45) % 8;
+            
+            return `<span class="hour-wind-direction" title="ทิศทางลม ${degrees}°">${directions[index]}</span>`;
         }
         
         function displayAirQuality(data) {
