@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Calculator</title>
     <style>
-        /* ใช้พื้นหลังที่สวยงามและมี Gradient */
+        /* พื้นหลังสีขาว */
         body {
             font-family: 'Arial', sans-serif;
             margin: 0;
@@ -13,15 +13,8 @@
             justify-content: center;
             align-items: center;
             height: 100vh;
-            background: linear-gradient(135deg, #6a11cb, #2575fc);
-            background-size: 400% 400%;
-            animation: gradientAnimation 15s ease infinite;
-        }
-
-        @keyframes gradientAnimation {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
+            background-color: #fff; /* เปลี่ยนพื้นหลังเป็นสีขาว */
+            transition: background-color 0.3s ease;
         }
 
         .calculator {
@@ -45,7 +38,6 @@
             border-radius: 10px;
             border: none;
             margin-bottom: 15px;
-            transition: background-color 0.3s ease;
         }
 
         .buttons {
@@ -84,12 +76,13 @@
             font-size: 1em;
         }
 
-        /* Dark Mode */
+        /* โหมดกลางคืน */
         .dark-mode {
             background-color: #111;
             color: #fff;
         }
 
+        /* โหมดกลางวัน */
         .light-mode {
             background-color: #fff;
             color: #000;
@@ -102,18 +95,69 @@
             display: none;
         }
 
-        .mode-toggle {
-            padding: 10px;
-            font-size: 1.2em;
-            background-color: #f28d35;
-            border-radius: 5px;
-            border: none;
-            margin-top: 15px;
-            cursor: pointer;
+        /* ปุ่มสวิตช์โหมด */
+        .mode-switch-container {
+            position: absolute;
+            top: 20px;
+            right: 20px;
         }
+
+        .mode-toggle {
+            width: 60px;
+            height: 30px;
+            background-color: #ccc;
+            border-radius: 50px;
+            position: relative;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .mode-toggle input {
+            display: none;
+        }
+
+        .slider {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: white;
+            border-radius: 50px;
+            transition: 0.4s;
+        }
+
+        .slider:before {
+            content: "";
+            position: absolute;
+            height: 22px;
+            width: 22px;
+            border-radius: 50px;
+            background-color: #111;
+            transition: 0.4s;
+            left: 4px;
+            bottom: 4px;
+        }
+
+        input:checked + .slider {
+            background-color: #4CAF50;
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(30px);
+        }
+
     </style>
 </head>
 <body>
+    <!-- สวิตช์โหมด -->
+    <div class="mode-switch-container">
+        <label class="mode-toggle">
+            <input type="checkbox" onclick="toggleMode()">
+            <span class="slider"></span>
+        </label>
+    </div>
+
     <div class="calculator">
         <input type="text" class="display" id="display" disabled />
         <div class="buttons">
@@ -142,8 +186,6 @@
             <h4>History:</h4>
             <ul id="history-list"></ul>
         </div>
-
-        <button class="mode-toggle" onclick="toggleMode()">Switch to Dark Mode</button>
     </div>
     <div class="footer">
         <p>Credit: Anawin Kulmor</p>
@@ -230,20 +272,18 @@
             isDarkMode = !isDarkMode;
             const body = document.body;
             const calculator = document.querySelector('.calculator');
-            const modeButton = document.querySelector('.mode-toggle');
+            const modeSwitch = document.querySelector('.mode-toggle');
 
             if (isDarkMode) {
                 body.classList.add('dark-mode');
                 body.classList.remove('light-mode');
                 calculator.classList.add('dark-mode');
                 calculator.classList.remove('light-mode');
-                modeButton.textContent = 'Switch to Light Mode';
             } else {
                 body.classList.add('light-mode');
                 body.classList.remove('dark-mode');
                 calculator.classList.add('light-mode');
                 calculator.classList.remove('dark-mode');
-                modeButton.textContent = 'Switch to Dark Mode';
             }
         }
     </script>
