@@ -1,43 +1,43 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="th">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Calculator</title>
+    <title>เครื่องคิดเลข</title>
     <style>
-        /* พื้นหลังสีขาว */
-        body {
-            font-family: 'Arial', sans-serif;
+        * {
             margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial', sans-serif;
+        }
+
+        body {
             display: flex;
             justify-content: center;
             align-items: center;
             height: 100vh;
-            background-color: #fff; /* พื้นหลังเริ่มต้นเป็นสีขาว */
-            transition: background-color 0.3s ease;
+            background-color: #f0f0f0;
         }
 
         .calculator {
-            background-color: #2c2c2c;
-            padding: 25px;
-            border-radius: 20px;
-            box-shadow: 0px 10px 40px rgba(0, 0, 0, 0.3);
-            width: 280px;
-            text-align: center;
-            position: relative; /* ให้ตำแหน่งสวิตช์อยู่ในตำแหน่งที่ใกล้เครื่องคิดเลข */
+            background-color: #fff;
+            border-radius: 15px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            width: 300px;
         }
 
-        .display {
+        .display input {
             width: 100%;
-            height: 70px;
-            background-color: #333;
-            color: #fff;
-            font-size: 2.5em;
+            height: 50px;
+            font-size: 2rem;
             text-align: right;
-            padding: 15px;
-            border-radius: 10px;
             border: none;
-            margin-bottom: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            padding: 10px;
+            background-color: #f7f7f7;
         }
 
         .buttons {
@@ -46,156 +46,66 @@
             gap: 10px;
         }
 
-        .btn {
-            padding: 25px;
-            font-size: 1.6em;
-            background-color: #444;
-            color: #fff;
-            border-radius: 12px;
+        button {
+            font-size: 1.5rem;
+            padding: 20px;
             border: none;
-            transition: background-color 0.3s ease, transform 0.2s ease;
-        }
-
-        .btn:hover {
-            background-color: #555;
-            transform: scale(1.1);
-        }
-
-        .operator {
-            background-color: #f28d35;
-        }
-
-        .operator:hover {
-            background-color: #f25d1e;
-        }
-
-        .footer {
-            text-align: center;
-            margin-top: 20px;
-            color: #888;
-            font-size: 1em;
-        }
-
-        /* โหมดกลางคืน */
-        .dark-mode {
-            background-color: #111;
-            color: #fff;
-        }
-
-        /* โหมดกลางวัน */
-        .light-mode {
-            background-color: #fff;
-            color: #000;
-        }
-
-        .history {
-            color: #ccc;
-            font-size: 1em;
-            margin-top: 10px;
-            display: none;
-        }
-
-        /* ปุ่มสวิตช์กลางวัน/กลางคืน */
-        .mode-switch-container {
-            position: absolute;
-            top: 10px;
-            left: 50%;
-            transform: translateX(-50%);
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .mode-toggle {
-            width: 40px;
-            height: 40px;
+            border-radius: 10px;
+            background-color: #f7f7f7;
             cursor: pointer;
-            transition: transform 0.3s ease;
+            transition: background-color 0.3s;
         }
 
-        /* ปรับขนาดไอคอนดวงอาทิตย์และดวงจันทร์ */
-        .mode-toggle img {
-            width: 100%;
-            height: 100%;
-            object-fit: contain;
+        button:hover {
+            background-color: #e0e0e0;
         }
 
-        /* ปุ่มเลือกสีพื้นหลัง */
-        .color-input-container {
-            margin-top: 10px;
-            display: flex;
-            justify-content: center;
+        button.operator {
+            background-color: #ff9500;
+            color: white;
         }
 
-        .color-input {
-            padding: 10px;
-            font-size: 1.2em;
-            border-radius: 5px;
-            border: 1px solid #ccc;
-            width: 150px;
-            text-align: center;
-            background-color: #f4f4f4;
+        button.operator:hover {
+            background-color: #ff7f00;
         }
     </style>
 </head>
 <body>
-    <!-- สวิตช์กลางวันกลางคืน -->
-    <div class="mode-switch-container">
-        <img class="mode-toggle" src="https://img.icons8.com/ios/50/000000/sun.png" onclick="toggleMode('day')">
-        <img class="mode-toggle" src="https://img.icons8.com/ios/50/000000/half-moon.png" onclick="toggleMode('night')">
-    </div>
-
     <div class="calculator">
-        <input type="text" class="display" id="display" disabled />
+        <div class="display">
+            <input type="text" id="result" disabled>
+        </div>
         <div class="buttons">
-            <button class="btn" onclick="appendNumber('7')">7</button>
-            <button class="btn" onclick="appendNumber('8')">8</button>
-            <button class="btn" onclick="appendNumber('9')">9</button>
-            <button class="btn operator" onclick="appendOperator('+')">+</button>
-
-            <button class="btn" onclick="appendNumber('4')">4</button>
-            <button class="btn" onclick="appendNumber('5')">5</button>
-            <button class="btn" onclick="appendNumber('6')">6</button>
-            <button class="btn operator" onclick="appendOperator('-')">-</button>
-
-            <button class="btn" onclick="appendNumber('1')">1</button>
-            <button class="btn" onclick="appendNumber('2')">2</button>
-            <button class="btn" onclick="appendNumber('3')">3</button>
-            <button class="btn operator" onclick="appendOperator('*')">*</button>
-
-            <button class="btn" onclick="appendNumber('0')">0</button>
-            <button class="btn" onclick="clearDisplay()">C</button>
+            <button class="btn" onclick="appendNumber(7)">7</button>
+            <button class="btn" onclick="appendNumber(8)">8</button>
+            <button class="btn" onclick="appendNumber(9)">9</button>
+            <button class="btn operator" onclick="setOperator('+')">+</button>
+            <button class="btn" onclick="appendNumber(4)">4</button>
+            <button class="btn" onclick="appendNumber(5)">5</button>
+            <button class="btn" onclick="appendNumber(6)">6</button>
+            <button class="btn operator" onclick="setOperator('-')">-</button>
+            <button class="btn" onclick="appendNumber(1)">1</button>
+            <button class="btn" onclick="appendNumber(2)">2</button>
+            <button class="btn" onclick="appendNumber(3)">3</button>
+            <button class="btn operator" onclick="setOperator('*')">*</button>
+            <button class="btn" onclick="appendNumber(0)">0</button>
+            <button class="btn" onclick="clearResult()">C</button>
             <button class="btn" onclick="calculateResult()">=</button>
-            <button class="btn operator" onclick="appendOperator('/')">/</button>
+            <button class="btn operator" onclick="setOperator('/')">/</button>
         </div>
-
-        <!-- Input สำหรับสีพื้นหลัง -->
-        <div class="color-input-container">
-            <input type="text" id="colorInput" class="color-input" placeholder="Enter Hex Color" />
-        </div>
-
-        <div class="history" id="history">
-            <h4>History:</h4>
-            <ul id="history-list"></ul>
-        </div>
-    </div>
-    <div class="footer">
-        <p>Credit: Anawin Kulmor</p>
     </div>
 
     <script>
         let currentInput = '';
-        let operator = '';
         let previousInput = '';
-        let history = [];
-        let isDarkMode = false;
+        let operator = '';
 
         function appendNumber(number) {
             currentInput += number;
-            document.getElementById('display').value = currentInput;
+            document.getElementById('result').value = currentInput;
         }
 
-        function appendOperator(op) {
+        function setOperator(op) {
             if (currentInput === '') return;
             if (previousInput !== '') {
                 calculateResult();
@@ -205,91 +115,37 @@
             currentInput = '';
         }
 
+        function clearResult() {
+            currentInput = '';
+            previousInput = '';
+            operator = '';
+            document.getElementById('result').value = '';
+        }
+
         function calculateResult() {
-            if (previousInput === '' || currentInput === '') return;
+            if (operator === '' || currentInput === '' || previousInput === '') return;
             let result;
-            const prev = parseFloat(previousInput);
-            const current = parseFloat(currentInput);
-            
             switch (operator) {
                 case '+':
-                    result = prev + current;
+                    result = parseFloat(previousInput) + parseFloat(currentInput);
                     break;
                 case '-':
-                    result = prev - current;
+                    result = parseFloat(previousInput) - parseFloat(currentInput);
                     break;
                 case '*':
-                    result = prev * current;
+                    result = parseFloat(previousInput) * parseFloat(currentInput);
                     break;
                 case '/':
-                    if (current === 0) {
-                        result = 'Error';
-                    } else {
-                        result = prev / current;
-                    }
+                    result = parseFloat(previousInput) / parseFloat(currentInput);
                     break;
                 default:
                     return;
             }
-
-            currentInput = result.toString();
-            operator = '';
-            previousInput = '';
-            document.getElementById('display').value = currentInput;
-
-            // Save result to history
-            history.push(`${previousInput} ${operator} ${current} = ${result}`);
-            updateHistory();
-        }
-
-        function clearDisplay() {
+            document.getElementById('result').value = result;
+            previousInput = result;
             currentInput = '';
             operator = '';
-            previousInput = '';
-            document.getElementById('display').value = '';
         }
-
-        function updateHistory() {
-            let historyList = document.getElementById('history-list');
-            historyList.innerHTML = '';
-            history.forEach(item => {
-                let li = document.createElement('li');
-                li.textContent = item;
-                historyList.appendChild(li);
-            });
-            document.getElementById('history').style.display = 'block';
-        }
-
-        // ฟังก์ชันสลับโหมดกลางวัน/กลางคืน
-        function toggleMode(mode) {
-            const body = document.body;
-            const calculator = document.querySelector('.calculator');
-            const sunIcon = document.querySelector('.mode-toggle[src="https://img.icons8.com/ios/50/000000/sun.png"]');
-            const moonIcon = document.querySelector('.mode-toggle[src="https://img.icons8.com/ios/50/000000/half-moon.png"]');
-            if (mode === 'day') {
-                body.classList.add('light-mode');
-                body.classList.remove('dark-mode');
-                calculator.classList.add('light-mode');
-                calculator.classList.remove('dark-mode');
-                sunIcon.style.display = 'block';
-                moonIcon.style.display = 'none';
-            } else {
-                body.classList.add('dark-mode');
-                body.classList.remove('light-mode');
-                calculator.classList.add('dark-mode');
-                calculator.classList.remove('light-mode');
-                sunIcon.style.display = 'none';
-                moonIcon.style.display = 'block';
-            }
-        }
-
-        // เปลี่ยนสีพื้นหลังตามรหัสสีที่ผู้ใช้ป้อน
-        document.getElementById('colorInput').addEventListener('input', function () {
-            const color = document.getElementById('colorInput').value;
-            if(/^#[0-9A-Fa-f]{6}$/.test(color)) {
-                document.body.style.backgroundColor = color;
-            }
-        });
     </script>
 </body>
 </html>
