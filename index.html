@@ -1,42 +1,33 @@
 <!DOCTYPE html>
+
 <html lang="th">
-
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Weather Forecast</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
-    <!-- เพิ่มลิงก์ไปยัง Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Itim&display=swap" rel="stylesheet">
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Weather Forecast</title>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet"/>
+<!-- เพิ่มลิงก์ไปยัง Google Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Itim&amp;display=swap" rel="stylesheet"/>
+<style>
+    body {
+        font-family: 'Itim', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        line-height: 1.6;
+        color: var(--text-color);
+        background-color: var(--bg-color);
+    }
 
-    <style>
-        /* ใช้ฟอนต์ Itim กับทั้งหน้าเว็บ */
-        body {
-            font-family: 'Itim', cursive;
-        }
-
-        h1, h2, h3 {
-            font-family: 'Itim', cursive;
-            font-weight: 400; /* น้ำหนักฟอนต์บาง */
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1); /* เงานุ่มๆ */
-        }
-
-        /* การจัดรูปแบบปุ่ม */
-        .menu-btn, button {
-            font-family: 'Itim', cursive;
-            letter-spacing: 0.5px; /* ระยะห่างระหว่างตัวอักษรเล็กน้อย */
-        }
-    </style>
+    h1, h2, h3, p, .menu-btn, .weather-card, .detail-item, .hour-card, .advice-item {
+        font-family: 'Itim', cursive;
+    }
+</style>
 </head>
-
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Weather Forecast</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Weather Forecast</title>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet"/>
+<style>
         :root {
             --primary: #3498db;
             --secondary: #2980b9;
@@ -649,181 +640,165 @@
             100% { transform: scale(1); }
         }
     </style>
-</head>
-<body>
-    <header>
-        <div class="container">
-            <h1><i class="fas fa-cloud-sun"></i> Weather Forecast</h1>
-            <p>ตรวจสอบสภาพอากาศและพยากรณ์อากาศล่าสุด</p>
-        </div>
-    </header>
-    
-    <div class="container">
-        <div class="menu">
-            <button class="menu-btn active" data-target="7-day" aria-label="7-day forecast"><i class="fas fa-calendar-week"></i> 7 วัน</button>
-            <button class="menu-btn" data-target="hourly" aria-label="Hourly forecast"><i class="fas fa-clock"></i> รายชั่วโมง</button>
-            <button class="menu-btn" data-target="air-quality" aria-label="Air quality"><i class="fas fa-wind"></i> คุณภาพอากาศ</button>
-            <button class="menu-btn" data-target="advice" aria-label="Daily advice"><i class="fas fa-lightbulb"></i> คำแนะนำ</button>
-            <button class="menu-btn" data-target="sun-info" aria-label="Sun information"><i class="fas fa-sun"></i> ดวงอาทิตย์</button>
-            <button class="menu-btn" data-target="add-location" aria-label="Add location"><i class="fas fa-plus"></i> เพิ่มสถานที่</button>
-            <button class="menu-btn" id="check-api-btn" aria-label="Check API status"><i class="fas fa-plug"></i> ตรวจสอบ API</button>
-            <button class="menu-btn" id="settings-btn" aria-label="Settings"><i class="fas fa-cog"></i> ตั้งค่า</button>
-        </div>
-        
-        <!-- 7-day Forecast -->
-        <div id="7-day" class="content active" aria-labelledby="7-day-forecast-heading">
-            <h2 id="7-day-forecast-heading"><i class="fas fa-calendar-week"></i> พยากรณ์อากาศ 7 วัน</h2>
-            <div class="location-selector">
-                <select id="location-7day" aria-label="Select location for 7-day forecast">
-                    <option value="">เลือกสถานที่...</option>
-                </select>
-                <button class="favorite-btn" title="เพิ่ม/ลบรายการโปรด" aria-label="Toggle favorite"><i class="fas fa-star"></i></button>
-                <button class="delete-location" title="ลบสถานที่นี้" aria-label="Delete location"><i class="fas fa-trash"></i></button>
-            </div>
-            <div id="7-day-forecast"></div>
-            <div class="chart-container" id="7-day-chart" aria-hidden="true"></div>
-        </div>
-        
-        <!-- Hourly Forecast -->
-        <div id="hourly" class="content" aria-labelledby="hourly-forecast-heading">
-            <h2 id="hourly-forecast-heading"><i class="fas fa-clock"></i> พยากรณ์อากาศรายชั่วโมง</h2>
-            <div class="location-selector">
-                <select id="location-hourly" aria-label="Select location for hourly forecast">
-                    <option value="">เลือกสถานที่...</option>
-                </select>
-                <button class="favorite-btn" title="เพิ่ม/ลบรายการโปรด" aria-label="Toggle favorite"><i class="fas fa-star"></i></button>
-                <button class="delete-location" title="ลบสถานที่นี้" aria-label="Delete location"><i class="fas fa-trash"></i></button>
-            </div>
-            <div id="hourly-forecast" class="hourly-detail-container" aria-live="polite"></div>
-            <div class="chart-container" id="hourly-chart" aria-hidden="true"></div>
-        </div>
-        
-        <!-- Air Quality -->
-        <div id="air-quality" class="content" aria-labelledby="air-quality-heading">
-            <h2 id="air-quality-heading"><i class="fas fa-wind"></i> คุณภาพอากาศ</h2>
-            <div class="location-selector">
-                <select id="location-aqi" aria-label="Select location for air quality">
-                    <option value="">เลือกสถานที่...</option>
-                </select>
-                <button class="favorite-btn" title="เพิ่ม/ลบรายการโปรด" aria-label="Toggle favorite"><i class="fas fa-star"></i></button>
-                <button class="delete-location" title="ลบสถานที่นี้" aria-label="Delete location"><i class="fas fa-trash"></i></button>
-            </div>
-            <div id="aqi-data" aria-live="polite"></div>
-            <div class="chart-container" id="aqi-chart" aria-hidden="true"></div>
-        </div>
-        
-        <!-- Daily Advice -->
-        <div id="advice" class="content" aria-labelledby="daily-advice-heading">
-            <h2 id="daily-advice-heading"><i class="fas fa-lightbulb"></i> คำแนะนำประจำวัน</h2>
-            <div class="location-selector">
-                <select id="location-advice" aria-label="Select location for daily advice">
-                    <option value="">เลือกสถานที่...</option>
-                </select>
-                <button class="favorite-btn" title="เพิ่ม/ลบรายการโปรด" aria-label="Toggle favorite"><i class="fas fa-star"></i></button>
-                <button class="delete-location" title="ลบสถานที่นี้" aria-label="Delete location"><i class="fas fa-trash"></i></button>
-            </div>
-            <div id="daily-advice" aria-live="polite"></div>
-        </div>
-        
-        <!-- Sun Info -->
-        <div id="sun-info" class="content" aria-labelledby="sun-info-heading">
-            <h2 id="sun-info-heading"><i class="fas fa-sun"></i> ข้อมูลดวงอาทิตย์ขึ้น-ตก</h2>
-            <div class="location-selector">
-                <select id="location-sun" aria-label="Select location for sun information">
-                    <option value="">เลือกสถานที่...</option>
-                </select>
-                <button class="favorite-btn" title="เพิ่ม/ลบรายการโปรด" aria-label="Toggle favorite"><i class="fas fa-star"></i></button>
-                <button class="delete-location" title="ลบสถานที่นี้" aria-label="Delete location"><i class="fas fa-trash"></i></button>
-            </div>
-            <div id="sun-data" aria-live="polite"></div>
-        </div>
-        
-        <!-- Add Location -->
-        <div id="add-location" class="content" aria-labelledby="add-location-heading">
-            <h2 id="add-location-heading"><i class="fas fa-plus"></i> เพิ่มสถานที่</h2>
-            <div>
-                <h3><i class="fas fa-map-marker-alt"></i> เพิ่มด้วยพิกัด</h3>
-                <form id="add-by-coords" aria-label="Add location by coordinates">
-                    <div>
-                        <label for="location-name">ชื่อสถานที่:</label>
-                        <input type="text" id="location-name" required aria-required="true">
-                    </div>
-                    <div>
-                        <label for="location-lat">ละติจูด:</label>
-                        <input type="text" id="location-lat" required placeholder="เช่น 13.7563" aria-required="true">
-                    </div>
-                    <div>
-                        <label for="location-lon">ลองจิจูด:</label>
-                        <input type="text" id="location-lon" required placeholder="เช่น 100.5018" aria-required="true">
-                    </div>
-                    <button type="submit"><i class="fas fa-save"></i> เพิ่มสถานที่</button>
-                </form>
-                
-                <h3><i class="fas fa-search"></i> เพิ่มด้วยชื่อสถานที่</h3>
-                <form id="add-by-name" aria-label="Add location by name">
-                    <div>
-                        <label for="search-name">ชื่อสถานที่:</label>
-                        <input type="text" id="search-name" required placeholder="เช่น Bangkok, Tokyo" aria-required="true">
-                    </div>
-                    <button type="submit"><i class="fas fa-search"></i> ค้นหาและเพิ่ม</button>
-                </form>
-            </div>
-        </div>
-        
-        <!-- API Status -->
-        <div id="api-status" class="content" aria-labelledby="api-status-heading">
-            <h2 id="api-status-heading"><i class="fas fa-plug"></i> สถานะ API</h2>
-            <div id="api-status-results" aria-live="polite"></div>
-        </div>
 
-        <!-- Settings -->
-        <div id="settings" class="content" aria-labelledby="settings-heading">
-            <h2 id="settings-heading"><i class="fas fa-cog"></i> ตั้งค่า</h2>
-            <div class="weather-card">
-                <h3><i class="fas fa-palette"></i> ธีม</h3>
-                <div class="theme-options">
-                    <button id="light-theme-btn" class="menu-btn active"><i class="fas fa-sun"></i> ธีมสว่าง</button>
-                    <button id="dark-theme-btn" class="menu-btn"><i class="fas fa-moon"></i> ธีมมืด</button>
-                </div>
-                
-                <h3><i class="fas fa-bell"></i> การแจ้งเตือน</h3>
-                <div class="notification-settings">
-                    <label>
-                        <input type="checkbox" id="enable-notifications" checked>
+<body>
+<header>
+<div class="container">
+<h1><i class="fas fa-cloud-sun"></i> Weather Forecast</h1>
+<p>ตรวจสอบสภาพอากาศและพยากรณ์อากาศล่าสุด</p>
+</div>
+</header>
+<div class="container">
+<div class="menu">
+<button aria-label="7-day forecast" class="menu-btn active" data-target="7-day"><i class="fas fa-calendar-week"></i> 7 วัน</button>
+<button aria-label="Hourly forecast" class="menu-btn" data-target="hourly"><i class="fas fa-clock"></i> รายชั่วโมง</button>
+<button aria-label="Air quality" class="menu-btn" data-target="air-quality"><i class="fas fa-wind"></i> คุณภาพอากาศ</button>
+<button aria-label="Daily advice" class="menu-btn" data-target="advice"><i class="fas fa-lightbulb"></i> คำแนะนำ</button>
+<button aria-label="Sun information" class="menu-btn" data-target="sun-info"><i class="fas fa-sun"></i> ดวงอาทิตย์</button>
+<button aria-label="Add location" class="menu-btn" data-target="add-location"><i class="fas fa-plus"></i> เพิ่มสถานที่</button>
+<button aria-label="Check API status" class="menu-btn" id="check-api-btn"><i class="fas fa-plug"></i> ตรวจสอบ API</button>
+<button aria-label="Settings" class="menu-btn" id="settings-btn"><i class="fas fa-cog"></i> ตั้งค่า</button>
+</div>
+<!-- 7-day Forecast -->
+<div aria-labelledby="7-day-forecast-heading" class="content active" id="7-day">
+<h2 id="7-day-forecast-heading"><i class="fas fa-calendar-week"></i> พยากรณ์อากาศ 7 วัน</h2>
+<div class="location-selector">
+<select aria-label="Select location for 7-day forecast" id="location-7day">
+<option value="">เลือกสถานที่...</option>
+</select>
+<button aria-label="Toggle favorite" class="favorite-btn" title="เพิ่ม/ลบรายการโปรด"><i class="fas fa-star"></i></button>
+<button aria-label="Delete location" class="delete-location" title="ลบสถานที่นี้"><i class="fas fa-trash"></i></button>
+</div>
+<div id="7-day-forecast"></div>
+<div aria-hidden="true" class="chart-container" id="7-day-chart"></div>
+</div>
+<!-- Hourly Forecast -->
+<div aria-labelledby="hourly-forecast-heading" class="content" id="hourly">
+<h2 id="hourly-forecast-heading"><i class="fas fa-clock"></i> พยากรณ์อากาศรายชั่วโมง</h2>
+<div class="location-selector">
+<select aria-label="Select location for hourly forecast" id="location-hourly">
+<option value="">เลือกสถานที่...</option>
+</select>
+<button aria-label="Toggle favorite" class="favorite-btn" title="เพิ่ม/ลบรายการโปรด"><i class="fas fa-star"></i></button>
+<button aria-label="Delete location" class="delete-location" title="ลบสถานที่นี้"><i class="fas fa-trash"></i></button>
+</div>
+<div aria-live="polite" class="hourly-detail-container" id="hourly-forecast"></div>
+<div aria-hidden="true" class="chart-container" id="hourly-chart"></div>
+</div>
+<!-- Air Quality -->
+<div aria-labelledby="air-quality-heading" class="content" id="air-quality">
+<h2 id="air-quality-heading"><i class="fas fa-wind"></i> คุณภาพอากาศ</h2>
+<div class="location-selector">
+<select aria-label="Select location for air quality" id="location-aqi">
+<option value="">เลือกสถานที่...</option>
+</select>
+<button aria-label="Toggle favorite" class="favorite-btn" title="เพิ่ม/ลบรายการโปรด"><i class="fas fa-star"></i></button>
+<button aria-label="Delete location" class="delete-location" title="ลบสถานที่นี้"><i class="fas fa-trash"></i></button>
+</div>
+<div aria-live="polite" id="aqi-data"></div>
+<div aria-hidden="true" class="chart-container" id="aqi-chart"></div>
+</div>
+<!-- Daily Advice -->
+<div aria-labelledby="daily-advice-heading" class="content" id="advice">
+<h2 id="daily-advice-heading"><i class="fas fa-lightbulb"></i> คำแนะนำประจำวัน</h2>
+<div class="location-selector">
+<select aria-label="Select location for daily advice" id="location-advice">
+<option value="">เลือกสถานที่...</option>
+</select>
+<button aria-label="Toggle favorite" class="favorite-btn" title="เพิ่ม/ลบรายการโปรด"><i class="fas fa-star"></i></button>
+<button aria-label="Delete location" class="delete-location" title="ลบสถานที่นี้"><i class="fas fa-trash"></i></button>
+</div>
+<div aria-live="polite" id="daily-advice"></div>
+</div>
+<!-- Sun Info -->
+<div aria-labelledby="sun-info-heading" class="content" id="sun-info">
+<h2 id="sun-info-heading"><i class="fas fa-sun"></i> ข้อมูลดวงอาทิตย์ขึ้น-ตก</h2>
+<div class="location-selector">
+<select aria-label="Select location for sun information" id="location-sun">
+<option value="">เลือกสถานที่...</option>
+</select>
+<button aria-label="Toggle favorite" class="favorite-btn" title="เพิ่ม/ลบรายการโปรด"><i class="fas fa-star"></i></button>
+<button aria-label="Delete location" class="delete-location" title="ลบสถานที่นี้"><i class="fas fa-trash"></i></button>
+</div>
+<div aria-live="polite" id="sun-data"></div>
+</div>
+<!-- Add Location -->
+<div aria-labelledby="add-location-heading" class="content" id="add-location">
+<h2 id="add-location-heading"><i class="fas fa-plus"></i> เพิ่มสถานที่</h2>
+<div>
+<h3><i class="fas fa-map-marker-alt"></i> เพิ่มด้วยพิกัด</h3>
+<form aria-label="Add location by coordinates" id="add-by-coords">
+<div>
+<label for="location-name">ชื่อสถานที่:</label>
+<input aria-required="true" id="location-name" required="" type="text"/>
+</div>
+<div>
+<label for="location-lat">ละติจูด:</label>
+<input aria-required="true" id="location-lat" placeholder="เช่น 13.7563" required="" type="text"/>
+</div>
+<div>
+<label for="location-lon">ลองจิจูด:</label>
+<input aria-required="true" id="location-lon" placeholder="เช่น 100.5018" required="" type="text"/>
+</div>
+<button type="submit"><i class="fas fa-save"></i> เพิ่มสถานที่</button>
+</form>
+<h3><i class="fas fa-search"></i> เพิ่มด้วยชื่อสถานที่</h3>
+<form aria-label="Add location by name" id="add-by-name">
+<div>
+<label for="search-name">ชื่อสถานที่:</label>
+<input aria-required="true" id="search-name" placeholder="เช่น Bangkok, Tokyo" required="" type="text"/>
+</div>
+<button type="submit"><i class="fas fa-search"></i> ค้นหาและเพิ่ม</button>
+</form>
+</div>
+</div>
+<!-- API Status -->
+<div aria-labelledby="api-status-heading" class="content" id="api-status">
+<h2 id="api-status-heading"><i class="fas fa-plug"></i> สถานะ API</h2>
+<div aria-live="polite" id="api-status-results"></div>
+</div>
+<!-- Settings -->
+<div aria-labelledby="settings-heading" class="content" id="settings">
+<h2 id="settings-heading"><i class="fas fa-cog"></i> ตั้งค่า</h2>
+<div class="weather-card">
+<h3><i class="fas fa-palette"></i> ธีม</h3>
+<div class="theme-options">
+<button class="menu-btn active" id="light-theme-btn"><i class="fas fa-sun"></i> ธีมสว่าง</button>
+<button class="menu-btn" id="dark-theme-btn"><i class="fas fa-moon"></i> ธีมมืด</button>
+</div>
+<h3><i class="fas fa-bell"></i> การแจ้งเตือน</h3>
+<div class="notification-settings">
+<label>
+<input checked="" id="enable-notifications" type="checkbox"/>
                         เปิดการแจ้งเตือนสภาพอากาศ
                     </label>
-                    <div>
-                        <label for="notification-level">ระดับการแจ้งเตือน:</label>
-                        <select id="notification-level">
-                            <option value="all">ทั้งหมด</option>
-                            <option value="important">สำคัญเท่านั้น</option>
-                        </select>
-                    </div>
-                </div>
-                
-                <h3><i class="fas fa-language"></i> ภาษา</h3>
-                <div class="language-options">
-                    <select id="language-select">
-                        <option value="th">ไทย</option>
-                        <option value="en">English</option>
-                    </select>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Notification container -->
-    <div id="notification" class="notification" aria-live="assertive"></div>
-
-    <!-- Theme toggle button -->
-    <button class="theme-toggle" id="theme-toggle" aria-label="Toggle theme">
-        <i class="fas fa-moon"></i>
-    </button>
-
-    <!-- Include Chart.js for data visualization -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-    <script>
+<div>
+<label for="notification-level">ระดับการแจ้งเตือน:</label>
+<select id="notification-level">
+<option value="all">ทั้งหมด</option>
+<option value="important">สำคัญเท่านั้น</option>
+</select>
+</div>
+</div>
+<h3><i class="fas fa-language"></i> ภาษา</h3>
+<div class="language-options">
+<select id="language-select">
+<option value="th">ไทย</option>
+<option value="en">English</option>
+</select>
+</div>
+</div>
+</div>
+</div>
+<!-- Notification container -->
+<div aria-live="assertive" class="notification" id="notification"></div>
+<!-- Theme toggle button -->
+<button aria-label="Toggle theme" class="theme-toggle" id="theme-toggle">
+<i class="fas fa-moon"></i>
+</button>
+<!-- Include Chart.js for data visualization -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
         // WeatherApp class for state management
         class WeatherApp {
             constructor() {
@@ -2532,7 +2507,6 @@
             window.weatherApp = weatherApp;
         });
     </script>
-
 <footer style="
     background: linear-gradient(135deg, var(--primary), var(--secondary));
     color: white;
@@ -2542,18 +2516,14 @@
     font-size: 0.9rem;
     box-shadow: var(--shadow);
 ">
-    <div class="container">
-        <p style="margin: 0;">
+<div class="container">
+<p style="margin: 0;">
             Created with ❤️ by <strong>Anawin Kulmor</strong> 
-            | <a href="https://www.facebook.com/share/1F1E5XEDCK" 
-               target="_blank" 
-               style="color: white; text-decoration: none;"
-               onmouseover="this.style.textDecoration='underline'" 
-               onmouseout="this.style.textDecoration='none'">
-               <i class="fab fa-facebook"></i> Facebook
+            | <a href="https://www.facebook.com/share/1F1E5XEDCK" onmouseout="this.style.textDecoration='none'" onmouseover="this.style.textDecoration='underline'" style="color: white; text-decoration: none;" target="_blank">
+<i class="fab fa-facebook"></i> Facebook
             </a>
-        </p>
-    </div>
+</p>
+</div>
 </footer>
 </body>
 </html>
